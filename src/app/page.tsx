@@ -5,16 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Send } from "lucide-react";
 import { toast } from "sonner";
+import axios from "axios";
 const ChatInput = () => {
   const uploadRef = useRef<HTMLInputElement>(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<string[]>([]);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const handleSend = () => {
-    if (!message.trim()) return;
-    if (!pdfFile) return;
+  const handleSend = async () => {
     const formData = new FormData();
-    formData.append("pdfFile", pdfFile);
-    formData.append("message", message);
+    if (pdfFile) {
+      formData.append("pdfFile", pdfFile);
+    }
+    message.forEach((msg) => {
+      formData.append("message[]", msg);
+    });
+
+    const response = await axios.post("/api/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log(response);
   };
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; //if [0] is not there optional chaining will prevent error and assign file as undefined
@@ -59,8 +69,8 @@ const ChatInput = () => {
 
           <Input
             type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={message.join("")}
+            onChange={(e) => setMessage([e.target.value])}
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             className="flex-1 border-none outline-none bg-transparent"
