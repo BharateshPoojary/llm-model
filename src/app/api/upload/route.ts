@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getChunkedDocsFromPDF } from "@/lib/pdf-processor";
 import { embedAndStoreDocs } from "@/lib/gemini-embeddings";
 import { callChain } from "@/lib/langchain";
+import { StreamingTextResponse } from "ai-stream-experimental";
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -10,31 +11,22 @@ export async function POST(req: NextRequest) {
     console.log(messages);
     const formattedPreviousMessages = messages.slice(0, -1);
     const question = messages.length > 0 ? messages[messages.length - 1] : "";
-    if (!question) throw new Error("Question is missing");
-
-    if (!question) {
-      return NextResponse.json("Error: No question in the request", {
-        status: 400,
-      });
-    }
     if (uploadedFile) {
+      console.log("Uploaded File", uploadedFile);
       const chunkedDocs = await getChunkedDocsFromPDF(uploadedFile as File);
       await embedAndStoreDocs(chunkedDocs);
     }
     try {
-      const streamingTextResponse = await callChain({
+      const stream = await callChain({
         question,
         chatHistory: formattedPreviousMessages.join("\n"),
       });
-
       return NextResponse.json(
         {
           success: true,
-          message: streamingTextResponse,
+          stream,
         },
-        {
-          status: 200,
-        }
+        { status: 200 }
       );
     } catch (error) {
       console.error("Internal server error ", error);

@@ -11,7 +11,7 @@ export async function getChunkedDocsFromPDF(file: File) {
     });
     // console.log("Document before chunking", docs);
     const chunkedDocs = await textSplitter.splitDocuments(docs);
-    // console.log("Document after chunking", chunkedDocs);
+    console.log("Document after chunking", chunkedDocs);
     return chunkedDocs;
   } catch (error) {
     throw new Error("PDF Chunking Failed");

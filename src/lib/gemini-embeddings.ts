@@ -21,7 +21,7 @@ export async function embedAndStoreDocs( // @ts-ignore docs type error
       pineconeIndex: index,
       textKey: "text",
     });
-    console.log("Embed xtored successfully");
+    console.log("Embed stored successfully");
   } catch (error) {
     throw new Error("Error while generating embeds");
   }
@@ -36,7 +36,7 @@ export async function getVectorStore() {
       apiKey: process.env.GEMINI_API_KEY as string,
     });
     const index = pc.index("bharat-llm");
-
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Add a small delay
     const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
       pineconeIndex: index,
       textKey: "text",

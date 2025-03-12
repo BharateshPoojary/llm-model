@@ -1,5 +1,5 @@
 import { getVectorStore } from "./gemini-embeddings";
-import { StreamingTextResponse, LangChainStream } from "ai-stream-experimental";
+import { LangChainAdapter } from "ai";
 import { streamingModel, nonStreamingModel } from "./llm";
 import { STANDALONE_QUESTION_TEMPLATE, QA_TEMPLATE } from "./prompt-template";
 import {
@@ -31,7 +31,6 @@ export async function callChain({ question, chatHistory }: CallChainArgs) {
     console.log("Sanitized question", sanitizedQuestion);
     const vectorStore = await getVectorStore();
 
-    const { stream, handlers } = LangChainStream();
     // Convert chat history to BaseMessages
     const formattedChatHistory = formatChatHistory(chatHistory);
     console.log("Formatted chat history", formattedChatHistory);
@@ -71,13 +70,14 @@ export async function callChain({ question, chatHistory }: CallChainArgs) {
       combineDocsChain: questionAnswerChain,
     });
 
-    await ragChain.invoke({
+    const resultStream = await ragChain.invoke({
       input: sanitizedQuestion,
       context,
-      ...handlers, // Spread the handlers directly into the config object
     });
 
-    return new StreamingTextResponse(stream);
+    console.log("Generated text:", resultStream);
+    return resultStream;
+    // return generatedText;
   } catch (error) {
     console.error("Error in callChain:", error);
     throw new Error("Call chain method failed to execute successfully.");

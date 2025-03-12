@@ -3,34 +3,65 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Send } from "lucide-react";
+import { Loader2, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
+import { useCompletion } from "@ai-sdk/react";
 const ChatInput = () => {
+  const { completion } = useCompletion();
   const uploadRef = useRef<HTMLInputElement>(null);
-  const [message, setMessage] = useState<string[]>([]);
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [messages, setMessages] = useState<string[]>([]);
+  const [inputMessage, setInputMessage] = useState("");
+
+  const [isPdfUploading, setIsPdfUploading] = useState<boolean>(false);
   const handleSend = async () => {
+    if (!inputMessage.trim()) return;
+    const updatedMessages = [...messages, inputMessage.trim()];
+    setMessages(updatedMessages);
+    setInputMessage("");
     const formData = new FormData();
-    if (pdfFile) {
-      formData.append("pdfFile", pdfFile);
-    }
-    message.forEach((msg) => {
+
+    console.log(messages);
+    updatedMessages.forEach((msg) => {
       formData.append("message[]", msg);
     });
-
-    const response = await axios.post("/api/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log(response);
+    try {
+      const message = await axios.post("/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(message.data.stream);
+    } catch (error) {
+      console.error(error);
+    }
   };
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0]; //if [0] is not there optional chaining will prevent error and assign file as undefined
     if (!file) return;
-    setPdfFile(file);
+
     console.log(file);
+    if (file) {
+      try {
+        setIsPdfUploading(true);
+        const formPDFData = new FormData();
+        formPDFData.append("pdfFile", file);
+        const pdfUploadResponse = await axios.post("/api/upload", formPDFData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        if (pdfUploadResponse.data) {
+          toast("File Uploaded successfully");
+        }
+      } catch (error) {
+        toast("Error uploading file");
+      } finally {
+        setIsPdfUploading(false);
+      }
+    }
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -43,23 +74,32 @@ const ChatInput = () => {
     <div className="flex flex-col h-screen">
       {/* Messages container */}
       <div className="flex-1 overflow-y-auto p-4">
-        {/* Chat messages will go here */}
+        {messages.map((msg, index) => (
+          <div key={index} className="mb-2">
+            {msg}
+          </div>
+        ))}
+        {/* Show completion */}
+        {completion && <div className="text-gray-500">{completion}</div>}
       </div>
 
       {/* Input fixed at bottom */}
       <div className="sticky bottom-0 left-0 right-0 sm:w-1/2 w-full bg-white p-2 border-t mx-auto">
         <div className="flex items-center gap-2 border rounded-xl p-2 bg-background">
-          {/* + Icon for file upload */}
           <Button
             onClick={() => uploadRef.current?.click()}
             size="icon"
             className="p-2 cursor-pointer"
           >
-            <Plus className="w-5 h-5" />
+            {isPdfUploading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Plus className="w-5 h-5" />
+            )}
           </Button>
 
-          {/* Hidden file input */}
           <input
+            disabled={isPdfUploading}
             ref={uploadRef}
             type="file"
             accept=".pdf"
@@ -69,13 +109,14 @@ const ChatInput = () => {
 
           <Input
             type="text"
-            value={message.join("")}
-            onChange={(e) => setMessage([e.target.value])}
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             className="flex-1 border-none outline-none bg-transparent"
           />
           <Button
+            disabled={isPdfUploading}
             onClick={handleSend}
             size="icon"
             className="p-2 cursor-pointer"
