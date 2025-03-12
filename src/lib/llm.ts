@@ -1,5 +1,5 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-
+let streamedResponse = "";
 export const streamingModel = new ChatGoogleGenerativeAI({
   modelName: "gemini-1.5-flash",
   maxOutputTokens: 768,

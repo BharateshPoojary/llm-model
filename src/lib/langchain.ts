@@ -2,6 +2,7 @@ import { getVectorStore } from "./gemini-embeddings";
 import { LangChainAdapter } from "ai";
 import { streamingModel, nonStreamingModel } from "./llm";
 import { STANDALONE_QUESTION_TEMPLATE, QA_TEMPLATE } from "./prompt-template";
+
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
@@ -19,7 +20,10 @@ type CallChainArgs = {
 function formatChatHistory(chatHistory: string) {
   if (!chatHistory) return [];
 
-  const messages = chatHistory.split("\n").map((msg) => msg.trim());
+  const messages = chatHistory
+    .split("\n")
+    .map((msg) => msg.trim())
+    .filter((msg) => msg !== "");
   return messages.map((msg, index) =>
     index % 2 === 0 ? new HumanMessage(msg) : new AIMessage(msg)
   );
@@ -57,8 +61,8 @@ export async function callChain({ question, chatHistory }: CallChainArgs) {
     // Answer question
     const qaPrompt = ChatPromptTemplate.fromMessages([
       ["system", QA_TEMPLATE],
-      new MessagesPlaceholder("chat_history"),
-      ["human", "{context}"],
+      new MessagesPlaceholder("context"),
+      ["human", "{input}"],
     ]);
     const questionAnswerChain = await createStuffDocumentsChain({
       llm: streamingModel,
@@ -70,14 +74,12 @@ export async function callChain({ question, chatHistory }: CallChainArgs) {
       combineDocsChain: questionAnswerChain,
     });
 
-    const resultStream = await ragChain.invoke({
-      input: sanitizedQuestion,
+    const result = await ragChain.invoke({
       context,
+      input: sanitizedQuestion,
     });
-
-    console.log("Generated text:", resultStream);
-    return resultStream;
-    // return generatedText;
+    return result;
+    // return LangChainAdapter.toDataStreamResponse(result as ReadableStream);
   } catch (error) {
     console.error("Error in callChain:", error);
     throw new Error("Call chain method failed to execute successfully.");
