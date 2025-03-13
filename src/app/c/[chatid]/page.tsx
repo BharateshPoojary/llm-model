@@ -9,11 +9,29 @@ import { useChat } from "@ai-sdk/react";
 import { ChatLine } from "@/components/chat-line";
 import { Message } from "ai";
 import { scrollToBottom } from "@/lib/utils";
-
+import { useParams } from "next/navigation";
+import { addMessage, setChatId } from "@/lib/features/chatData";
+import { useDispatch } from "react-redux";
+import { setHistory } from "@/lib/features/Chat";
 const ChatInput = () => {
+  const dispatch = useDispatch();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const params = useParams<{ chatid: string }>();
+  useEffect(() => {
+    dispatch(setChatId(params.chatid));
+    const getHistory = async () => {
+      try {
+        const result = await axios.get("/api/savechat");
+        const chats = result.data.history;
+        dispatch(setHistory(chats));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getHistory();
+  }, []);
 
   const { messages, input, handleInputChange, handleSubmit, setMessages } =
     useChat({
@@ -34,6 +52,10 @@ const ChatInput = () => {
 
   useEffect(() => {
     setTimeout(() => scrollToBottom(containerRef), 100);
+    if (messages.length > 0) {
+      const { id, role, content } = messages[messages.length - 1];
+      dispatch(addMessage({ id, role, content }));
+    }
   }, [messages]);
 
   const [isPdfUploading, setIsPdfUploading] = useState(false);
