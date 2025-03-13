@@ -1,5 +1,4 @@
 import { getVectorStore } from "./gemini-embeddings";
-import { LangChainAdapter } from "ai";
 import { streamingModel, nonStreamingModel } from "./llm";
 import { STANDALONE_QUESTION_TEMPLATE, QA_TEMPLATE } from "./prompt-template";
 
@@ -7,8 +6,6 @@ import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
-// ChatPromptTemplate – Template for creating structured prompts.
-// MessagesPlaceholder – Placeholder for dynamic content (like chatHistory) in the prompt.
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
 import { createRetrievalChain } from "langchain/chains/retrieval";

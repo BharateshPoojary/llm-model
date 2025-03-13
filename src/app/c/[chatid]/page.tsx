@@ -31,7 +31,7 @@ const ChatInput = () => {
       }
     };
     getHistory();
-  }, []);
+  }, [dispatch, params.chatid]);
 
   const { messages, input, handleInputChange, handleSubmit, setMessages } =
     useChat({
@@ -56,7 +56,7 @@ const ChatInput = () => {
       const { id, role, content } = messages[messages.length - 1];
       dispatch(addMessage({ id, role, content }));
     }
-  }, [messages]);
+  }, [dispatch, messages]);
 
   const [isPdfUploading, setIsPdfUploading] = useState(false);
   const [fileInfo, setFileInfo] = useState<{
@@ -92,7 +92,9 @@ const ChatInput = () => {
         toast("File uploaded successfully");
       }
     } catch (error) {
-      toast("Error uploading file");
+      if (error instanceof Error) {
+        toast(`Error uploading file${error.message}`);
+      }
     } finally {
       setIsPdfUploading(false);
     }

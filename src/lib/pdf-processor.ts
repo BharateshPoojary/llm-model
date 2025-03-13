@@ -14,6 +14,8 @@ export async function getChunkedDocsFromPDF(file: File) {
     console.log("Document after chunking", chunkedDocs);
     return chunkedDocs;
   } catch (error) {
-    throw new Error("PDF Chunking Failed");
+    if (error) {
+      throw new Error("PDF Chunking Failed");
+    }
   }
 }

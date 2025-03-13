@@ -15,8 +15,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Chat, ChatModel } from "@/model/Chat";
 import { setHistory } from "@/lib/features/Chat";
 
 // Menu items.

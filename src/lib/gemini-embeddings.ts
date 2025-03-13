@@ -6,8 +6,8 @@ import { PineconeStore } from "@langchain/pinecone";
 const pc = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY as string,
 });
-export async function embedAndStoreDocs( // @ts-ignore docs type error
-  chunkedDocs: Document<Record<string, any>>[]
+export async function embedAndStoreDocs( // @ts-expect-error docs type error
+  chunkedDocs: Document<Record<string, string>>[]
 ) {
   try {
     const index = pc.index("bharat-llm");
@@ -23,7 +23,9 @@ export async function embedAndStoreDocs( // @ts-ignore docs type error
     });
     console.log("Embed stored successfully");
   } catch (error) {
-    throw new Error("Error while generating embeds");
+    if (error) {
+      throw new Error("Error while generating embeds");
+    }
   }
 }
 // Returns vector-store handle to be used a retrievers on langchains

@@ -10,7 +10,9 @@ export async function POST(req: NextRequest) {
       console.log("Uploaded File", uploadedFile);
 
       const chunkedDocs = await getChunkedDocsFromPDF(uploadedFile as File);
-      await embedAndStoreDocs(chunkedDocs);
+      if (chunkedDocs) {
+        await embedAndStoreDocs(chunkedDocs);
+      }
       return NextResponse.json(
         {
           success: true,
