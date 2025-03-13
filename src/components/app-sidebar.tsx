@@ -34,22 +34,25 @@ export function AppSidebar() {
   // const [history, setHistory] = useState<Chat[]>([]);
   const handleClick = async () => {
     try {
-      const response = await axios.post("/api/savechat", {
-        chatId,
-        messages,
-      });
-      if (response.data) {
-        const getHistory = async () => {
-          try {
-            const result = await axios.get("/api/savechat");
-            const chats = result.data.history;
-            dispatch(setHistory(chats));
-          } catch (error) {
-            console.log(error);
-          }
-        };
-        getHistory();
-        router.replace("/");
+      if (messages.length > 0) {
+        const response = await axios.post("/api/savechat", {
+          chatId,
+          messages,
+        });
+
+        if (response.data) {
+          const getHistory = async () => {
+            try {
+              const result = await axios.get("/api/savechat");
+              const chats = result.data.history;
+              dispatch(setHistory(chats));
+            } catch (error) {
+              console.log(error);
+            }
+          };
+          getHistory();
+          router.replace("/");
+        }
       }
     } catch (error) {
       console.log(error);
