@@ -117,7 +117,7 @@ const ChatInput = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col " style={{ height: "calc(100% - 20px)" }}>
       <div className="p-6 overflow-y-auto flex-1" ref={containerRef}>
         {messages.map(({ id, role, content }: Message) => (
           <ChatLine key={id} role={role} content={content} />
