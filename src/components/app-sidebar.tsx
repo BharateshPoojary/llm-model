@@ -17,7 +17,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
 
-// Menu items.
 const items = [
   {
     title: "New Chat",
@@ -58,6 +57,9 @@ export function AppSidebar() {
       console.log(error);
     }
   };
+  const handleChat = async (chatId: string) => {
+    router.replace(`/c/${chatId}`);
+  };
   return (
     <Sidebar>
       <SidebarContent>
@@ -83,9 +85,7 @@ export function AppSidebar() {
                 <SidebarMenuItem
                   key={eachchat.chatId}
                   className="cursor-pointer"
-                  onClick={() =>
-                    alert("displaying chat history work in progress")
-                  }
+                  onClick={() => handleChat(eachchat.chatId)}
                 >
                   <SidebarMenuButton asChild>
                     <div>

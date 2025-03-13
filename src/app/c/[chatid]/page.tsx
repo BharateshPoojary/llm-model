@@ -19,19 +19,6 @@ const ChatInput = () => {
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const params = useParams<{ chatid: string }>();
-  useEffect(() => {
-    dispatch(setChatId(params.chatid));
-    const getHistory = async () => {
-      try {
-        const result = await axios.get("/api/savechat");
-        const chats = result.data.history;
-        dispatch(setHistory(chats));
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getHistory();
-  }, [dispatch, params.chatid]);
 
   const { messages, input, handleInputChange, handleSubmit, setMessages } =
     useChat({
@@ -49,6 +36,31 @@ const ChatInput = () => {
         }
       },
     });
+  useEffect(() => {
+    dispatch(setChatId(params.chatid));
+    console.log(params.chatid);
+    const getHistory = async () => {
+      try {
+        const result = await axios.get("/api/savechat");
+        const chats = result.data.history;
+        dispatch(setHistory(chats));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getHistory();
+    const handleChat = async () => {
+      const getChat = await axios.post("/api/getchat", {
+        chatId: params.chatid,
+      });
+
+      if (getChat.data.chats) {
+        const messages = getChat.data.chats.messages;
+        setMessages(messages);
+      }
+    };
+    handleChat();
+  }, [dispatch, params.chatid]);
 
   useEffect(() => {
     setTimeout(() => scrollToBottom(containerRef), 100);

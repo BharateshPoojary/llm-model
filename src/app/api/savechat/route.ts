@@ -24,8 +24,8 @@ export async function POST(request: Request) {
   }
 
   return Response.json(
-    { success: true, message: "Chat Data received successfully" },
-    { status: 200 }
+    { success: true, message: "Chat Data received  and saved successfully" },
+    { status: 201 }
   );
 }
 export async function GET() {
@@ -36,6 +36,7 @@ export async function GET() {
       return Response.json(
         {
           success: true,
+          message: "All Message received successfully",
           history: getHistory,
         },
         { status: 200 }
@@ -46,7 +47,7 @@ export async function GET() {
       return Response.json(
         {
           success: false,
-          message: `Error deleting user object: ${error.message}`,
+          message: `Error getting user message: ${error.message}`,
         },
         { status: 500 }
       );
@@ -54,7 +55,7 @@ export async function GET() {
     return Response.json(
       {
         success: false,
-        message: "Unknown error occurred while deleting user object",
+        message: "Unknown error occurred while getting history",
       },
       { status: 500 }
     );
