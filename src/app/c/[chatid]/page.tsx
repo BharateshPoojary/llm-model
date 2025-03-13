@@ -136,7 +136,7 @@ const ChatInput = () => {
         ))}
       </div>
 
-      <div className="w-full sm:w-1/2 bg-white p-2 border-t mx-auto">
+      <div className="w-full sm:w-1/2 bg-white p-2 border-t mx-auto sticky bottom-0">
         <div className="flex items-end gap-2 border rounded-xl p-2 bg-background">
           <Button
             onClick={() => uploadRef.current?.click()}
