@@ -1,24 +1,24 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Loader2, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useChat } from "@ai-sdk/react";
 import { ChatLine } from "@/components/chat-line";
 import { Message } from "ai";
+import { scrollToBottom } from "@/lib/utils";
+
 const ChatInput = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const uploadRef = useRef<HTMLInputElement>(null);
-  // const [messages, setMessages] = useState<string[]>([]);
-  // const [inputMessage, setInputMessage] = useState("");
+  const uploadRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
   const { messages, input, handleInputChange, handleSubmit, setMessages } =
     useChat({
       onResponse: async (response) => {
         const data = await response.json();
-        console.log(data.content);
         if (data.content) {
           setMessages((prev) => [
             ...prev,
@@ -32,56 +32,76 @@ const ChatInput = () => {
       },
     });
 
-  const [isPdfUploading, setIsPdfUploading] = useState<boolean>(false);
+  useEffect(() => {
+    setTimeout(() => scrollToBottom(containerRef), 100);
+  }, [messages]);
+
+  const [isPdfUploading, setIsPdfUploading] = useState(false);
+  const [fileInfo, setFileInfo] = useState<{
+    name: string;
+    size: number;
+  } | null>(null);
+
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const file = event.target.files?.[0]; //if [0] is not there optional chaining will prevent error and assign file as undefined
+    const file = event.target.files?.[0];
     if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast("Maximum PDF file size must be 2 MB");
+      return;
+    }
 
-    console.log(file);
-    if (file) {
-      try {
-        setIsPdfUploading(true);
-        const formPDFData = new FormData();
-        formPDFData.append("pdfFile", file);
-        const pdfUploadResponse = await axios.post("/api/upload", formPDFData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        if (pdfUploadResponse.data) {
-          toast("File Uploaded successfully");
-        }
-      } catch (error) {
-        toast("Error uploading file");
-      } finally {
-        setIsPdfUploading(false);
+    setFileInfo({
+      name: file.name,
+      size: file.size,
+    });
+
+    try {
+      setIsPdfUploading(true);
+      const formPDFData = new FormData();
+      formPDFData.append("pdfFile", file);
+      const pdfUploadResponse = await axios.post("/api/upload", formPDFData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (pdfUploadResponse.data) {
+        toast("File uploaded successfully");
       }
+    } catch (error) {
+      toast("Error uploading file");
+    } finally {
+      setIsPdfUploading(false);
     }
   };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      // handleSend();
       handleSubmit();
+    }
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+    }
+  };
+
+  const handleSend = () => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
     }
   };
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Messages container */}
-
-      <div className="p-6 overflow-y-auto" ref={containerRef}>
+      <div className="p-6 overflow-y-auto flex-1" ref={containerRef}>
         {messages.map(({ id, role, content }: Message) => (
           <ChatLine key={id} role={role} content={content} />
         ))}
       </div>
 
-      {/* Input fixed at bottom */}
-      <div className="sticky bottom-0 left-0 right-0 sm:w-1/2 w-full bg-white p-2 border-t mx-auto">
-        <div className="flex items-center gap-2 border rounded-xl p-2 bg-background">
-          {/* + Icon for file upload */}
+      <div className="w-full sm:w-1/2 bg-white p-2 border-t mx-auto">
+        <div className="flex items-end gap-2 border rounded-xl p-2 bg-background">
           <Button
             onClick={() => uploadRef.current?.click()}
             size="icon"
@@ -94,7 +114,6 @@ const ChatInput = () => {
             )}
           </Button>
 
-          {/* Hidden file input */}
           <input
             disabled={isPdfUploading}
             ref={uploadRef}
@@ -103,30 +122,48 @@ const ChatInput = () => {
             onChange={handleFileSelect}
             className="hidden"
           />
-          <form onSubmit={handleSubmit} className="flex">
+
+          <form onSubmit={handleSubmit} className="flex w-full">
             <textarea
+              ref={inputRef}
               value={input}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder="Type a message..."
               rows={1}
-              className="w-full resize-none overflow-hidden border-none outline-none bg-transparent"
+              className="w-full resize-none overflow-y-auto border-none outline-none bg-transparent"
+              style={{
+                maxHeight: "200px",
+              }}
               onInput={(e) => {
-                e.currentTarget.style.height = "auto"; // Reset height to recalculate
-                e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`; // Set to scroll height
+                e.currentTarget.style.height = "auto";
+                e.currentTarget.style.height = `${Math.min(
+                  e.currentTarget.scrollHeight,
+                  200
+                )}px`;
               }}
             />
-
-            <Button
-              disabled={isPdfUploading}
-              type="submit"
-              size="icon"
-              className="p-2 cursor-pointer"
-            >
-              <Send className="w-5 h-5" />
-            </Button>
+            <div className="flex items-end">
+              <Button
+                disabled={isPdfUploading}
+                type="submit"
+                size="icon"
+                className="p-2 cursor-pointer"
+                onClick={handleSend}
+              >
+                <Send className="w-5 h-5" />
+              </Button>
+            </div>
           </form>
         </div>
+
+        {/* Display file info */}
+        {fileInfo && (
+          <div className="mt-2 bg-gray-100 p-2 rounded-lg text-sm">
+            <p>{fileInfo.name}</p>
+            <p>{(fileInfo.size / 1024).toFixed(2)} KB</p>
+          </div>
+        )}
       </div>
     </div>
   );

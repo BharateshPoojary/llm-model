@@ -35,7 +35,7 @@ export function ChatLine({
             {role == "assistant" ? "AI" : "You"}
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-sm">
+        <CardContent className="text-md">
           <Balancer>{formattedMessage}</Balancer>
         </CardContent>
       </Card>
