@@ -80,6 +80,9 @@ export function AppSidebar() {
                 <SidebarMenuItem
                   key={eachchat.chatId}
                   className="cursor-pointer"
+                  onClick={() =>
+                    alert("displaying chat history work in progress")
+                  }
                 >
                   <SidebarMenuButton asChild>
                     <div>
