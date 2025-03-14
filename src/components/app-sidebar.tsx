@@ -16,7 +16,7 @@ import { RootState } from "@/lib/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
-import { addMessage, clearMessage } from "@/lib/features/ChatData";
+import { clearMessage, updateMessages } from "@/lib/features/ChatData";
 
 const items = [
   {
@@ -43,6 +43,18 @@ export function AppSidebar() {
   const handleClick = async () => {
     try {
       if (messages.length > 0) {
+        const getChat = await axios.post("/api/getchat", {
+          chatId,
+        });
+
+        if (getChat.data.chats) {
+          const Storedmessages = getChat.data.chats.messages;
+          dispatch(
+            updateMessages(
+              messages.filter((message) => message !== Storedmessages)
+            )
+          );
+        }
         const response = await axios.post("/api/savechat", {
           chatId,
           messages,
