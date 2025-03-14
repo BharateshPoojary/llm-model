@@ -10,7 +10,7 @@ import { ChatLine } from "@/components/chat-line";
 import { Message } from "ai";
 import { scrollToBottom } from "@/lib/utils";
 import { useParams } from "next/navigation";
-import { addMessage, setChatId } from "@/lib/features/chatData";
+import { addMessage, setChatId } from "@/lib/features/ChatData";
 import { useDispatch } from "react-redux";
 import { setHistory } from "@/lib/features/Chat";
 const ChatInput = () => {

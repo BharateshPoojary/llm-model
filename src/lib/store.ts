@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import chatDataReducer from "./features/chatData";
+import chatDataReducer from "./features/ChatData";
 import chatReducer from "./features/Chat";
 export const makeStore = () => {
   return configureStore({

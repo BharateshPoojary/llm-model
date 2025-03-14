@@ -16,6 +16,7 @@ import { RootState } from "@/lib/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
+import { addMessage, clearMessage } from "@/lib/features/ChatData";
 
 const items = [
   {
@@ -30,7 +31,15 @@ export function AppSidebar() {
   const { chatId, messages } = useSelector(
     (state: RootState) => state.chatData
   );
-  // const [history, setHistory] = useState<Chat[]>([]);
+  const getHistory = async () => {
+    try {
+      const result = await axios.get("/api/savechat");
+      const chats = result.data.history;
+      dispatch(setHistory(chats));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleClick = async () => {
     try {
       if (messages.length > 0) {
@@ -40,15 +49,7 @@ export function AppSidebar() {
         });
 
         if (response.data) {
-          const getHistory = async () => {
-            try {
-              const result = await axios.get("/api/savechat");
-              const chats = result.data.history;
-              dispatch(setHistory(chats));
-            } catch (error) {
-              console.log(error);
-            }
-          };
+          dispatch(clearMessage());
           getHistory();
           router.replace("/");
         }
@@ -57,8 +58,23 @@ export function AppSidebar() {
       console.log(error);
     }
   };
-  const handleChat = async (chatId: string) => {
-    router.replace(`/c/${chatId}`);
+  const handleChat = async (chatIdfromHistory: string) => {
+    try {
+      console.log("chat Id", chatId);
+
+      const response = await axios.post("/api/savechat", {
+        chatId,
+        messages,
+      });
+
+      if (response.data) {
+        dispatch(clearMessage());
+        getHistory();
+        router.replace(`/c/${chatIdfromHistory}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <Sidebar>

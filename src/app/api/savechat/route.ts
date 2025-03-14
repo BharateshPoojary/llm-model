@@ -1,5 +1,5 @@
 import dbConnection from "@/lib/dbConnect";
-import { Message } from "@/lib/features/chatData";
+import { Message } from "@/lib/features/ChatData";
 import { ChatModel } from "@/model/Chat";
 
 export async function POST(request: Request) {
@@ -10,12 +10,14 @@ export async function POST(request: Request) {
   const existingChat = await ChatModel.findOne({ chatId });
 
   if (existingChat) {
+    console.log("I am existing chat");
     await ChatModel.findOneAndUpdate(
       { chatId },
       { $push: { messages: { $each: messages } } },
       { new: true }
     );
   } else {
+    console.log("I am new chat");
     const saveChat = new ChatModel({
       chatId,
       messages,

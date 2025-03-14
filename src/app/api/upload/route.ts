@@ -25,8 +25,22 @@ export async function POST(req: NextRequest) {
     }
   } catch (error) {
     console.error("Internal server error ", error);
-    return NextResponse.json("Error: Something went wrong. Try again!", {
-      status: 500,
-    });
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { success: false, message: error.message },
+        {
+          status: 500,
+        }
+      );
+    }
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Error: Something went wrong while uploading. Try again!",
+      },
+      {
+        status: 500,
+      }
+    );
   }
 }

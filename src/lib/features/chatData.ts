@@ -27,13 +27,12 @@ export const chatDataSlice = createSlice({
     addMessage: (state, action: PayloadAction<Message>) => {
       state.messages.push(action.payload);
     },
-    setHistoryMessage: (state, action: PayloadAction<Message[]>) => {
-      state.messages = action.payload;
+    clearMessage: (state) => {
+      state.messages = [];
     },
   },
 });
 
-export const { setChatId, addMessage, setHistoryMessage } =
-  chatDataSlice.actions;
+export const { setChatId, addMessage, clearMessage } = chatDataSlice.actions;
 
 export default chatDataSlice.reducer;
