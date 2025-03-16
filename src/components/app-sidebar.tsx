@@ -16,8 +16,7 @@ import { RootState } from "@/lib/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
-import { clearMessage, updateMessages } from "@/lib/features/ChatData";
-
+import { clearMessage, Message } from "@/lib/features/ChatData";
 const items = [
   {
     title: "New Chat",
@@ -40,53 +39,27 @@ export function AppSidebar() {
       console.log(error);
     }
   };
-  const handleClick = async () => {
+  const saveChat = async () => {
     try {
-      if (messages.length > 0) {
-        const getChat = await axios.post("/api/getchat", {
-          chatId,
-        });
-
-        if (getChat.data.chats) {
-          const Storedmessages = getChat.data.chats.messages;
-          dispatch(
-            updateMessages(
-              messages.filter((message) => message !== Storedmessages)
-            )
-          );
-        }
-        const response = await axios.post("/api/savechat", {
-          chatId,
-          messages,
-        });
-
-        if (response.data) {
-          dispatch(clearMessage());
-          getHistory();
-          router.replace("/");
-        }
+      const response = await axios.post("/api/savechat", {
+        chatId,
+        messages,
+      });
+      if (response.data) {
+        dispatch(clearMessage());
+        getHistory();
       }
     } catch (error) {
       console.log(error);
     }
   };
+  const handleClick = async () => {
+    await saveChat();
+    router.replace("/");
+  };
   const handleChat = async (chatIdfromHistory: string) => {
-    try {
-      console.log("chat Id", chatId);
-
-      const response = await axios.post("/api/savechat", {
-        chatId,
-        messages,
-      });
-
-      if (response.data) {
-        dispatch(clearMessage());
-        getHistory();
-        router.replace(`/c/${chatIdfromHistory}`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    await saveChat();
+    router.replace(`/c/${chatIdfromHistory}`);
   };
   return (
     <Sidebar>

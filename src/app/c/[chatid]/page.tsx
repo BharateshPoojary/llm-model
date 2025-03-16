@@ -55,8 +55,8 @@ const ChatInput = () => {
       });
 
       if (getChat.data.chats) {
-        const messages = getChat.data.chats.messages;
-        setMessages(messages);
+        const chatmessages = getChat.data.chats.messages;
+        setMessages(chatmessages);
       }
     };
     handleChat();
@@ -64,10 +64,24 @@ const ChatInput = () => {
 
   useEffect(() => {
     setTimeout(() => scrollToBottom(containerRef), 100);
-    if (messages.length > 0) {
-      const { id, role, content } = messages[messages.length - 1];
-      dispatch(addMessage({ id, role, content }));
-    }
+    const addMessagetoState = async () => {
+      if (messages.length > 0) {
+        const { id, role, content } = messages[messages.length - 1];
+        const getChat = await axios.post("/api/getchat", {
+          chatId: params.chatid,
+        });
+
+        if (getChat.data.chats) {
+          const chatmessages: Message[] = getChat.data.chats.messages;
+          if (!chatmessages.some((message) => message.id === id)) {
+            dispatch(addMessage({ id, role, content }));
+          }
+        } else {
+          dispatch(addMessage({ id, role, content }));
+        }
+      }
+    };
+    addMessagetoState();
   }, [dispatch, messages]);
 
   const [isPdfUploading, setIsPdfUploading] = useState(false);
