@@ -60,7 +60,7 @@ const ChatInput = () => {
       }
     };
     handleChat();
-  }, [dispatch, params.chatid]);
+  }, [dispatch, setMessages, params.chatid]);
 
   useEffect(() => {
     setTimeout(() => scrollToBottom(containerRef), 100);
@@ -82,7 +82,7 @@ const ChatInput = () => {
       }
     };
     addMessagetoState();
-  }, [dispatch, messages]);
+  }, [dispatch, messages, params.chatid]);
 
   const [isPdfUploading, setIsPdfUploading] = useState(false);
   const [fileInfo, setFileInfo] = useState<{
