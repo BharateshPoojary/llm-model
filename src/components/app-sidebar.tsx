@@ -41,13 +41,15 @@ export function AppSidebar() {
   };
   const saveChat = async () => {
     try {
-      const response = await axios.post("/api/savechat", {
-        chatId,
-        messages,
-      });
-      if (response.data) {
-        dispatch(clearMessage());
-        getHistory();
+      if (messages.length > 0) {
+        const response = await axios.post("/api/savechat", {
+          chatId,
+          messages,
+        });
+        if (response.data) {
+          dispatch(clearMessage());
+          getHistory();
+        }
       }
     } catch (error) {
       console.log(error);

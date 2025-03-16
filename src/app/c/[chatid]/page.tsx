@@ -82,9 +82,9 @@ const ChatInput = () => {
       }
     };
     addMessagetoState();
-  }, [dispatch, messages, params.chatid]);
+  }, [dispatch, messages]);
 
-  const [isPdfUploading, setIsPdfUploading] = useState(false);
+  const [isPDFUploading, setisPDFUploading] = useState(false);
   const [fileInfo, setFileInfo] = useState<{
     name: string;
     size: number;
@@ -106,7 +106,7 @@ const ChatInput = () => {
     });
 
     try {
-      setIsPdfUploading(true);
+      setisPDFUploading(true);
       const formPDFData = new FormData();
       formPDFData.append("pdfFile", file);
       const pdfUploadResponse = await axios.post("/api/upload", formPDFData, {
@@ -122,14 +122,20 @@ const ChatInput = () => {
         toast(`Error uploading file${error.message}`);
       }
     } finally {
-      setIsPdfUploading(false);
+      setisPDFUploading(false);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit();
+      if (!input.trim()) return;
+
+      try {
+        handleSubmit(); // handleSubmit should handle the server request
+      } catch (error) {
+        console.error("Failed to send message:", error);
+      }
     }
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
@@ -157,7 +163,7 @@ const ChatInput = () => {
             size="icon"
             className="p-2 cursor-pointer"
           >
-            {isPdfUploading ? (
+            {isPDFUploading ? (
               <Loader2 className="animate-spin" />
             ) : (
               <Plus className="w-5 h-5" />
@@ -165,7 +171,7 @@ const ChatInput = () => {
           </Button>
 
           <input
-            disabled={isPdfUploading}
+            disabled={isPDFUploading}
             ref={uploadRef}
             type="file"
             accept=".pdf"
@@ -195,7 +201,7 @@ const ChatInput = () => {
             />
             <div className="flex items-end">
               <Button
-                disabled={isPdfUploading}
+                disabled={isPDFUploading}
                 type="submit"
                 size="icon"
                 className="p-2 cursor-pointer"
