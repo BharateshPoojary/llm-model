@@ -16,7 +16,7 @@ import { RootState } from "@/lib/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
-import { clearMessage, Message } from "@/lib/features/ChatData";
+import { clearMessage } from "@/lib/features/ChatData";
 const items = [
   {
     title: "New Chat",
