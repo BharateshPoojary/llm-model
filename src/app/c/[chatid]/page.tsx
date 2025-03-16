@@ -19,23 +19,29 @@ const ChatInput = () => {
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const params = useParams<{ chatid: string }>();
-  const [isSending, setIsSending] = useState(false);
-  const { messages, input, handleInputChange, handleSubmit, setMessages } =
-    useChat({
-      onResponse: async (response) => {
-        const data = await response.json();
-        if (data.content) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: Date.now().toString(),
-              role: "assistant",
-              content: data.content,
-            },
-          ]);
-        }
-      },
-    });
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    setMessages,
+    status,
+  } = useChat({
+    onResponse: async (response) => {
+      const data = await response.json();
+      if (data.content) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            role: "assistant",
+            content: data.content,
+          },
+        ]);
+      }
+    },
+  });
+
   useEffect(() => {
     dispatch(setChatId(params.chatid));
     console.log(params.chatid);
@@ -89,19 +95,6 @@ const ChatInput = () => {
     name: string;
     size: number;
   } | null>(null);
-  const handleFormSubmit = async () => {
-    if (isSending || isPDFUploading || !input.trim()) return;
-
-    setIsSending(true);
-
-    try {
-      handleSubmit(); // Centralize submission logic here
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    } finally {
-      setIsSending(false);
-    }
-  };
 
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -145,7 +138,7 @@ const ChatInput = () => {
       if (!input.trim()) return;
 
       try {
-        await handleFormSubmit(); // handleSubmit should handle the server request
+        handleSubmit(); // handleSubmit should handle the server request
       } catch (error) {
         console.error("Failed to send message:", error);
       }
@@ -163,7 +156,7 @@ const ChatInput = () => {
 
   return (
     <div className="flex flex-col " style={{ height: "calc(100% - 20px)" }}>
-      <div className="p-6 overflow-y-auto flex-1" ref={containerRef}>
+      <div className="p-6 overflow-y-auto flex-1 " ref={containerRef}>
         {messages.map(({ id, role, content }: Message) => (
           <ChatLine key={id} role={role} content={content} />
         ))}
@@ -192,7 +185,7 @@ const ChatInput = () => {
             className="hidden"
           />
 
-          <form onSubmit={handleFormSubmit} className="flex w-full">
+          <form onSubmit={handleSubmit} className="flex w-full">
             <textarea
               ref={inputRef}
               value={input}
@@ -214,7 +207,9 @@ const ChatInput = () => {
             />
             <div className="flex items-end">
               <Button
-                disabled={isPDFUploading || isSending}
+                disabled={
+                  isPDFUploading || status === "submitted" || !input.trim()
+                }
                 type="submit"
                 size="icon"
                 className="p-2 cursor-pointer"
