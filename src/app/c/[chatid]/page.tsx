@@ -19,7 +19,7 @@ const ChatInput = () => {
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const params = useParams<{ chatid: string }>();
-
+  const [isSending, setIsSending] = useState(false);
   const { messages, input, handleInputChange, handleSubmit, setMessages } =
     useChat({
       onResponse: async (response) => {
@@ -89,6 +89,19 @@ const ChatInput = () => {
     name: string;
     size: number;
   } | null>(null);
+  const handleFormSubmit = async () => {
+    if (isSending || isPDFUploading || !input.trim()) return;
+
+    setIsSending(true);
+
+    try {
+      handleSubmit(); // Centralize submission logic here
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -132,7 +145,7 @@ const ChatInput = () => {
       if (!input.trim()) return;
 
       try {
-        handleSubmit(); // handleSubmit should handle the server request
+        await handleFormSubmit(); // handleSubmit should handle the server request
       } catch (error) {
         console.error("Failed to send message:", error);
       }
@@ -179,7 +192,7 @@ const ChatInput = () => {
             className="hidden"
           />
 
-          <form onSubmit={handleSubmit} className="flex w-full">
+          <form onSubmit={handleFormSubmit} className="flex w-full">
             <textarea
               ref={inputRef}
               value={input}
@@ -201,7 +214,7 @@ const ChatInput = () => {
             />
             <div className="flex items-end">
               <Button
-                disabled={isPDFUploading}
+                disabled={isPDFUploading || isSending}
                 type="submit"
                 size="icon"
                 className="p-2 cursor-pointer"
