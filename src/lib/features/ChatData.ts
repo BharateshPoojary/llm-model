@@ -27,9 +27,6 @@ export const chatDataSlice = createSlice({
     addMessage: (state, action: PayloadAction<Message>) => {
       state.messages.push(action.payload);
     },
-    // updateMessages: (state, action: PayloadAction<Message[]>) => {
-    //   state.messages = action.payload;
-    // },
     clearMessage: (state) => {
       state.messages = [];
     },

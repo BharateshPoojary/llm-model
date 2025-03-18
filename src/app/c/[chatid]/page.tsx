@@ -27,6 +27,7 @@ const ChatInput = () => {
     setMessages,
     status,
   } = useChat({
+    //useChat from vercel ai sdk to manage message state and all ai chatbot related activities
     onResponse: async (response) => {
       const data = await response.json();
       if (data.content) {

@@ -5,22 +5,29 @@ import { PineconeStore } from "@langchain/pinecone";
 
 const pc = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY as string,
-});
+}); //creating a new pinecone instance and giving api key as argument so that we can create a new pinecone client and we can interact with our pine cone db
 export async function embedAndStoreDocs( // @ts-expect-error docs type error
-  chunkedDocs: Document<Record<string, string>>[]
+  chunkedDocs: Document<Record<string, string>>[] //this function will accept array of Documents i.e array of chunked docs which  we made using text splitter
 ) {
   try {
-    const index = pc.index("bharat-llm");
+    const index = pc.index("bharat-llm"); // Accesses a Pinecone index named "bharat-llm" An index in Pinecone is similar to a collection or table where vector embeddings are stored and searched.
     const embeddings = new GoogleGenerativeAIEmbeddings({
-      modelName: "embedding-001",
-      taskType: TaskType.RETRIEVAL_DOCUMENT,
-      title: "Document title",
-      apiKey: process.env.GEMINI_API_KEY as string,
+      //Creates an instance for generating embeddings using the Gemini model.
+      modelName: "embedding-001", // Specifies the model name for embedding generation.
+      taskType: TaskType.RETRIEVAL_DOCUMENT, //this indicate the type of task the embeddings will be used RETRIEVAL_DOCUMENT means this will be used for matching or retrieving the document based on similarity like  RETRIEVAL_DOCUMENT helps generate embeddings optimized for finding the most relevant document based on a query.
+      // title: "Document title",/title provides context or metadata about the content being embedded. It can help model to improve the quality of embeddings It is optional
+      apiKey: process.env.GEMINI_API_KEY as string, //passing the gemini api key
     });
+
     await PineconeStore.fromDocuments(chunkedDocs, embeddings, {
-      pineconeIndex: index,
-      textKey: "text",
+      //creating  a new pinecone store from documents this also consider emdedding model for storing vector emdedding  for documents here we are also giving index name where this embeddings will be stored
+      // You can think as Pineconestore includes fromDocuments method which converts the chunkeddocs into embeddings and stored in vector db
+      //chunked docs is the array of docs to be embedded
+      //embeddings The embeddings generator.
+      pineconeIndex: index, //The target Pinecone index where the embeddings will be stored.
+      textKey: "text", //The key in the document object that holds the text content.
     });
+    //This above method will return a vector store which as .asRetriever method Its return value can be used as value for retriever option in chain os that to query relevant document
     console.log("Embed stored successfully");
   } catch (error) {
     if (error) {
@@ -36,15 +43,17 @@ export async function getVectorStore() {
       taskType: TaskType.RETRIEVAL_DOCUMENT,
       title: "Document title",
       apiKey: process.env.GEMINI_API_KEY as string,
-    });
-    const index = pc.index("bharat-llm");
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Add a small delay
+    }); //This is the embedding model which we are using
+    const index = pc.index("bharat-llm"); //This is the index which we need
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Add a small delay This is likely added to avoid rate-limiting issues or to ensure the index is ready before proceeding.
+    //To get the store which has embeddings
     const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-      pineconeIndex: index,
-      textKey: "text",
+      //It creates a new pinecone store  instance  which will be created using  existing pinecone index now this store can be used to get or to search for query embeddings
+      pineconeIndex: index, //The index which whose store instance we have to create
+      textKey: "text", //text is the key which includes the textcontent
     });
 
-    return vectorStore; //It is responsible for retrieving vector store
+    return vectorStore; //returning the vector store so that we can use in our chain
   } catch (error) {
     console.log("error ", error);
     throw new Error("Something went wrong while getting vector store !");
