@@ -13,7 +13,12 @@ import { useParams } from "next/navigation";
 import { addMessage, setChatId } from "@/lib/features/ChatData";
 import { useDispatch } from "react-redux";
 import { setHistory } from "@/lib/features/Chat";
+import { useUser } from "@clerk/nextjs";
 const ChatInput = () => {
+  const { isSignedIn, user } = useUser();
+  if (isSignedIn) {
+    console.log("User", user);
+  }
   const dispatch = useDispatch();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const uploadRef = useRef<HTMLInputElement | null>(null);
