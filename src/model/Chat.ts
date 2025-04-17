@@ -14,12 +14,14 @@ const MessageSchema: Schema<Message> = new Schema({
 
 export interface Chat extends Document {
   chatId: string;
+  useremail: string;
   messages: Message[];
 }
 
 const ChatSchema: Schema<Chat> = new Schema(
   {
-    chatId: { type: String, required: true, unique: true },
+    chatId: { type: String, unique: true },
+    useremail: { type: String, unique: true },
     messages: [MessageSchema],
   },
   { timestamps: true }
