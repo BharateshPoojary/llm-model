@@ -24,7 +24,8 @@ export default function Page() {
         emailAddress,
         password,
       });
-
+      //make email verification from db here
+      //If saving if the email already exixts dont save else save and then send verification code
       // Send the user an email with the verification code
       await signUp.prepareEmailAddressVerification({
         strategy: "email_code",
@@ -56,7 +57,7 @@ export default function Page() {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        router.push("/");
+        router.push("/sign-in"); //redirect to signin
       } else {
         // If the status is not complete, check why. User may need to
         // complete further steps.

@@ -28,14 +28,17 @@ export default function SignInForm() {
       // and redirect the user
       if (signInAttempt.status === "complete") {
         console.log("I am In");
+        //if signin success then push to dashboard no need to verify form your db as clerk will do for you
         await setActive({ session: signInAttempt.createdSessionId });
         router.push("/");
       } else {
+        //show toast message here signin failed plaease login with correct email and pwd
         // If the status is not complete, check why. User may need to
         // complete further steps.
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: any) {
+      //toast something went wrong from clerk server side
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
       console.error(JSON.stringify(err, null, 2));

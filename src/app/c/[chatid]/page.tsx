@@ -22,26 +22,6 @@ const ChatInput = () => {
   if (isSignedIn) {
     console.log("User", user.emailAddresses[0].emailAddress);
   }
-  useEffect(() => {
-    if (isSignedIn && user && user.emailAddresses[0]?.emailAddress) {
-      const postUserData = async () => {
-        const useremail = user.emailAddresses[0].emailAddress;
-        try {
-          const postData = await axios.post<ApiResponse>("/api/saveuser", {
-            useremail,
-          });
-          console.log("PostData", postData.data);
-          toast.success(postData.data.message);
-        } catch (error) {
-          const axiosError = error as AxiosError<ApiResponse>;
-          toast.error(
-            axiosError.response?.data.message || "Failed to save data"
-          );
-        }
-      };
-      postUserData();
-    }
-  }, [isSignedIn, user]);
 
   const dispatch = useDispatch();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -71,7 +51,7 @@ const ChatInput = () => {
       }
     },
   });
-
+  //here using useUser directly get user email and get its chat only like this authentiaction flow will be there
   useEffect(() => {
     dispatch(setChatId(params.chatid));
     console.log(params.chatid);
