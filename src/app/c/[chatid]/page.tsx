@@ -16,7 +16,6 @@ import { addMessage, setChatId } from "@/lib/features/ChatData";
 import { useDispatch } from "react-redux";
 import { setHistory } from "@/lib/features/Chat";
 import { SignedIn, useClerk, useUser } from "@clerk/nextjs";
-import { ApiResponse } from "@/types/ApiResponse";
 const ChatInput = () => {
   const { isSignedIn, user } = useUser();
   if (isSignedIn) {
