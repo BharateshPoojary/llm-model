@@ -31,8 +31,7 @@ export const config = {
     "/sign-up(.*)",
     // Skip Next.js internals and all static files, unless found in search
     //Negative Lookahead (?!...) It is used to tell nextjs middleware not to run the middleware function for this following files
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/((?!api|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Always run for API routes
-    "/(api|trpc)(.*)",
   ],
 };

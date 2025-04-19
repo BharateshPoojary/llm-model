@@ -3,7 +3,8 @@ import { ChatModel } from "@/model/Chat";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const { useremail } = await request.json();
+  const { chatId, useremail, messages } = await request.json();
+  console.log(chatId, useremail, messages);
   await dbConnection();
   const isExistingUser = await ChatModel.findOne({ useremail });
   if (isExistingUser) {
@@ -17,15 +18,19 @@ export async function POST(request: NextRequest) {
       }
     );
   }
-  const saveUser = await ChatModel.insertOne({ useremail });
+  const saveUser = await new ChatModel({
+    chatId,
+    useremail,
+    messages,
+  }).save();
   if (saveUser) {
     return Response.json(
       {
         success: true,
-        message: "Email saved successfully",
+        message: "Account created successfully",
       },
       {
-        status: 200,
+        status: 201,
       }
     );
   }
