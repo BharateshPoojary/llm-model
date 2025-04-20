@@ -18,8 +18,11 @@ import { setHistory } from "@/lib/features/Chat";
 import { SignedIn, useClerk, useUser } from "@clerk/nextjs";
 const ChatInput = () => {
   const { isSignedIn, user } = useUser();
+  let userEmail: string = "";
+
   if (isSignedIn) {
     console.log("User", user.emailAddresses[0].emailAddress);
+    userEmail = user.emailAddresses[0].emailAddress;
   }
 
   const dispatch = useDispatch();
@@ -50,13 +53,16 @@ const ChatInput = () => {
       }
     },
   });
+
   //here using useUser directly get user email and get its chat only like this authentiaction flow will be there
   useEffect(() => {
     dispatch(setChatId(params.chatid));
     console.log(params.chatid);
     const getHistory = async () => {
       try {
-        const result = await axios.get("/api/savechat");
+        const result = await axios.post("/api/getHistory", {
+          useremail: userEmail,
+        });
         const chats = result.data.history;
         dispatch(setHistory(chats));
       } catch (error) {
@@ -67,6 +73,7 @@ const ChatInput = () => {
     const handleChat = async () => {
       const getChat = await axios.post("/api/getchat", {
         chatId: params.chatid,
+        useremail: userEmail,
       });
 
       if (getChat.data.chats) {
@@ -84,6 +91,7 @@ const ChatInput = () => {
         const { id, role, content } = messages[messages.length - 1];
         const getChat = await axios.post("/api/getchat", {
           chatId: params.chatid,
+          useremail: userEmail,
         });
 
         if (getChat.data.chats) {
@@ -179,9 +187,10 @@ const ChatInput = () => {
       </header>
     );
   }
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar useremail={userEmail} />
       <main className="w-full">
         <SidebarTrigger />
         <Header />

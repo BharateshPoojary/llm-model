@@ -2,10 +2,10 @@ import dbConnection from "@/lib/dbConnect";
 import { ChatModel } from "@/model/Chat";
 
 export async function POST(request: Request) {
-  const { chatId } = await request.json();
+  const { useremail } = await request.json();
   await dbConnection();
   try {
-    const getChat = await ChatModel.findOne({ chatId });
+    const getChat = await ChatModel.findOne({ useremail });
     return Response.json(
       {
         success: true,

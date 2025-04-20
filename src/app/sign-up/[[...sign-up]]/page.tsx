@@ -67,7 +67,7 @@ export default function Page() {
       });
 
       const response = await axios.post<ApiResponse>("/api/saveuser", {
-        chatId: Date.now().toString(), // convert to string
+        chatId: "", // convert to string
         useremail: emailAddress,
         messages: [],
       });

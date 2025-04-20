@@ -8,6 +8,7 @@ interface Message {
 
 interface Chat {
   chatId: string;
+  useremail: string;
   messages: Message[];
 }
 
