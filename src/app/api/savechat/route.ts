@@ -5,10 +5,15 @@ import { ChatModel } from "@/model/Chat";
 export async function POST(request: Request) {
   const {
     chatId,
+    chatNumber,
     useremail,
     messages,
-  }: { chatId: string; useremail: string; messages: Message[] } =
-    await request.json();
+  }: {
+    chatId: string;
+    useremail: string;
+    chatNumber: string;
+    messages: Message[];
+  } = await request.json();
   console.log(chatId, useremail, messages);
   await dbConnection();
   const existingChat = await ChatModel.findOne({ useremail });
@@ -19,7 +24,7 @@ export async function POST(request: Request) {
       { useremail },
       {
         $set: { chatId },
-        $push: { messages: { $each: messages } },
+        $push: { "ArrayOfChats.$.messages": { $each: messages } },
       },
       { new: true }
     );
@@ -28,7 +33,12 @@ export async function POST(request: Request) {
     const saveChat = new ChatModel({
       chatId,
       useremail,
-      messages,
+      $push: {
+        ArrayofChats: {
+          chatNumber,
+          messages,
+        },
+      },
     });
     await saveChat.save();
   }
