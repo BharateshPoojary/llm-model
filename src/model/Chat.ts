@@ -1,31 +1,30 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface Message {
-  sender: string;
-  text: string;
-  timestamp: Date;
+  id: string;
+  role: string;
+  content: string;
 }
 
 const MessageSchema = new Schema<Message>({
-  sender: String,
-  text: String,
-  timestamp: { type: Date, default: Date.now },
+  id: { type: String, unique: true },
+  role: { type: String },
+  content: { type: String },
 });
-interface ChatItem {
-  chatNumber: number;
+
+export interface ChatItem {
+  chatNumber: string;
   messages: Message[];
 }
-
+const ChatItemSchema = new Schema<ChatItem>({
+  chatNumber: { type: String, unique: true },
+  messages: [MessageSchema],
+});
 export interface Chat extends Document {
   chatId: string;
   useremail: string;
   ArrayOfChats: ChatItem[];
 }
-
-const ChatItemSchema = new Schema<ChatItem>({
-  chatNumber: { type: Number },
-  messages: [MessageSchema],
-});
 
 const ChatSchema = new Schema<Chat>(
   {

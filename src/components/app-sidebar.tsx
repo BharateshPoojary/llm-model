@@ -17,6 +17,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
 import { clearMessage } from "@/lib/features/ChatData";
+import { useState } from "react";
 const items = [
   {
     title: "New Chat",
@@ -26,6 +27,8 @@ const items = [
 export function AppSidebar({ useremail }: { useremail: string }) {
   const router = useRouter();
   const dispatch = useDispatch();
+  const [chatNumber, setChatNumber] = useState<number>(0);
+
   const { history } = useSelector((state: RootState) => state.chat);
   const { chatId, messages } = useSelector(
     (state: RootState) => state.chatData
@@ -41,7 +44,7 @@ export function AppSidebar({ useremail }: { useremail: string }) {
       console.log(error);
     }
   };
-  const saveChat = async () => {
+  const saveNewChat = async () => {
     console.log("User Email", useremail);
     try {
       console.log("messages.length", messages.length);
@@ -49,9 +52,11 @@ export function AppSidebar({ useremail }: { useremail: string }) {
         const response = await axios.post("/api/savechat", {
           chatId,
           useremail,
+          chatNumber,
           messages,
         });
         if (response.data) {
+          setChatNumber(chatNumber + 1);
           console.log("I am clearing all messages");
           dispatch(clearMessage());
           getHistory();
@@ -61,14 +66,14 @@ export function AppSidebar({ useremail }: { useremail: string }) {
       console.log(error);
     }
   };
-  const handleClick = async () => {
-    await saveChat();
+  const handleNewChatClick = async () => {
+    await saveNewChat();
     router.replace("/");
   };
   const handleChat = async (chatIdfromHistory: string) => {
     console.log("History length", history.length);
 
-    await saveChat();
+    //await saveChat();//here Existing chat will have different function
     router.replace(`/c/${chatIdfromHistory}`);
   };
   return (
@@ -81,7 +86,7 @@ export function AppSidebar({ useremail }: { useremail: string }) {
               {items.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
-                  onClick={() => handleClick()}
+                  onClick={() => handleNewChatClick()}
                   className="cursor-pointer"
                 >
                   <SidebarMenuButton asChild>
