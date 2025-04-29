@@ -1,15 +1,10 @@
+import { ChatItem } from "@/model/Chat";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-}
-
-interface Chat {
+export interface Chat {
   chatId: string;
   useremail: string;
-  messages: Message[];
+  ArrayOfChats: ChatItem[];
 }
 
 interface ChatState {

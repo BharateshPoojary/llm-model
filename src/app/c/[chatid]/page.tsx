@@ -11,10 +11,10 @@ import { useChat } from "@ai-sdk/react";
 import { ChatLine } from "@/components/chat-line";
 import { Message } from "ai";
 import { scrollToBottom } from "@/lib/utils";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { addMessage, setChatId } from "@/lib/features/ChatData";
 import { useDispatch } from "react-redux";
-import { setHistory } from "@/lib/features/Chat";
+import { Chat, setHistory } from "@/lib/features/Chat";
 import { SignedIn, useClerk, useUser } from "@clerk/nextjs";
 const ChatInput = () => {
   const { isSignedIn, user } = useUser();
@@ -30,6 +30,11 @@ const ChatInput = () => {
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const params = useParams<{ chatid: string }>();
+  const searchParams = useSearchParams();
+  let search: string | null = null;
+  if (searchParams.get("chatNumber")) {
+    search = searchParams.get("chatNumber");
+  }
   const {
     messages,
     input,
@@ -56,6 +61,7 @@ const ChatInput = () => {
 
   //here using useUser directly get user email and get its chat only like this authentiaction flow will be there
   useEffect(() => {
+    console.log("I am inside useEffect");
     dispatch(setChatId(params.chatid));
     console.log(params.chatid);
     const getHistory = async () => {
@@ -63,7 +69,7 @@ const ChatInput = () => {
         const result = await axios.post("/api/getHistory", {
           useremail: userEmail,
         });
-        const chats = result.data.history;
+        const chats: Chat[] = result.data.history;
         dispatch(setHistory(chats));
       } catch (error) {
         console.log(error);
@@ -72,33 +78,39 @@ const ChatInput = () => {
     getHistory();
     const handleChat = async () => {
       const getChat = await axios.post("/api/getchat", {
-        chatId: params.chatid,
         useremail: userEmail,
       });
-
-      if (getChat.data.chats) {
-        const chatmessages = getChat.data.chats.messages;
-        setMessages(chatmessages);
+      const Chats: Chat = getChat.data.chats;
+      if (Chats) {
+        Chats.ArrayOfChats.map((eachchat) => {
+          if (eachchat.chatNumber === search) {
+            setMessages(eachchat.messages);
+          }
+        });
       }
     };
     handleChat();
-  }, [dispatch, setMessages, params.chatid]);
+  }, [dispatch, setMessages, params.chatid, search]);
 
   useEffect(() => {
     setTimeout(() => scrollToBottom(containerRef), 100);
     const addMessagetoState = async () => {
       if (messages.length > 0) {
+        console.log("Messages heere", messages);
         const { id, role, content } = messages[messages.length - 1];
         const getChat = await axios.post("/api/getchat", {
-          chatId: params.chatid,
           useremail: userEmail,
         });
 
         if (getChat.data.chats) {
-          const chatmessages: Message[] = getChat.data.chats.messages;
-          if (!chatmessages.some((message) => message.id === id)) {
-            dispatch(addMessage({ id, role, content }));
-          }
+          const chatmessages: Message[] =
+            getChat.data.chats.ArrayOfChats[
+              getChat.data.chats.ArrayOfChats.length - 1
+            ].messages;
+          console.log("Chat messages", chatmessages);
+          // if (!chatmessages.some((message) => message.id === id)) {
+          dispatch(addMessage({ id, role, content }));
+          // }
         } else {
           dispatch(addMessage({ id, role, content }));
         }

@@ -17,7 +17,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
 import { clearMessage } from "@/lib/features/ChatData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const items = [
   {
     title: "New Chat",
@@ -27,18 +27,22 @@ const items = [
 export function AppSidebar({ useremail }: { useremail: string }) {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [chatNumber, setChatNumber] = useState<number>(0);
+  // const [chatNumber, setChatNumber] = useState<number>(0);
 
   const { history } = useSelector((state: RootState) => state.chat);
   const { chatId, messages } = useSelector(
     (state: RootState) => state.chatData
   );
+  useEffect(() => {
+    console.log("Messages in side bar", messages);
+  }, [messages]);
   const getHistory = async () => {
     try {
       const result = await axios.post("/api/getHistory", {
         useremail,
       });
       const chats = result.data.history;
+      console.log("History data", chats);
       dispatch(setHistory(chats));
     } catch (error) {
       console.log(error);
@@ -48,15 +52,16 @@ export function AppSidebar({ useremail }: { useremail: string }) {
     console.log("User Email", useremail);
     try {
       console.log("messages.length", messages.length);
+      console.log("Current Messages", messages);
       if (messages.length > 0) {
-        const response = await axios.post("/api/savechat", {
+        const response = await axios.post("/api/savenewchat", {
           chatId,
           useremail,
-          chatNumber,
+          chatNumber: Date.now(),
           messages,
         });
         if (response.data) {
-          setChatNumber(chatNumber + 1);
+          // setChatNumber(chatNumber + 1);
           console.log("I am clearing all messages");
           dispatch(clearMessage());
           getHistory();
@@ -70,11 +75,14 @@ export function AppSidebar({ useremail }: { useremail: string }) {
     await saveNewChat();
     router.replace("/");
   };
-  const handleChat = async (chatIdfromHistory: string) => {
+  const handleChat = async (
+    chatIdfromHistory: string,
+    specificChatNumber: string
+  ) => {
     console.log("History length", history.length);
 
     //await saveChat();//here Existing chat will have different function
-    router.replace(`/c/${chatIdfromHistory}`);
+    router.replace(`/c/${chatIdfromHistory}?chatNumber=${specificChatNumber}`);
   };
   return (
     <Sidebar>
@@ -97,32 +105,36 @@ export function AppSidebar({ useremail }: { useremail: string }) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              {history.map((eachchat) => (
-                <SidebarMenuItem
-                  key={eachchat.chatId}
-                  className={`${
-                    eachchat.messages.length > 0 ? "cursor-pointer" : ""
-                  } `}
-                  onClick={
-                    eachchat.messages.length > 0
-                      ? () => handleChat(eachchat.chatId)
-                      : undefined
-                  }
-                >
-                  <SidebarMenuButton asChild>
-                    <div>
-                      <div className="text-sm text-gray-500">
-                        {eachchat.messages[
-                          eachchat.messages.length - 1
-                        ]?.content.slice(0, 20)}
-                        {eachchat.messages.length > 0
-                          ? "..."
-                          : "No Chat History Available"}
+              {history.map((eachuserchat) =>
+                eachuserchat.ArrayOfChats.map((eachchat) => (
+                  <SidebarMenuItem
+                    key={eachchat.chatNumber}
+                    className={`${
+                      eachuserchat.ArrayOfChats.length > 0
+                        ? "cursor-pointer"
+                        : ""
+                    }`}
+                    onClick={
+                      eachuserchat.ArrayOfChats.length > 0
+                        ? () =>
+                            handleChat(eachuserchat.chatId, eachchat.chatNumber)
+                        : undefined
+                    }
+                  >
+                    <SidebarMenuButton asChild>
+                      <div>
+                        <div className="text-sm text-gray-500">
+                          {eachchat.messages?.length > 0
+                            ? `${eachchat.messages[
+                                eachchat.messages.length - 1
+                              ].content.slice(0, 20)}...`
+                            : "No Chat History Available"}
+                        </div>
                       </div>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface Message {
   id: string;
-  role: string;
+  role: "assistant" | "user";
   content: string;
 }
 
