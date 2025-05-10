@@ -17,25 +17,29 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
 import { clearMessage } from "@/lib/features/ChatData";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 const items = [
   {
     title: "New Chat",
     icon: MessageCirclePlus,
   },
 ];
-export function AppSidebar({ useremail }: { useremail: string }) {
+export function AppSidebar({
+  useremail,
+  searchparam,
+}: {
+  useremail: string;
+  searchparam: string;
+}) {
   const router = useRouter();
   const dispatch = useDispatch();
-  // const [chatNumber, setChatNumber] = useState<number>(0);
-
   const { history } = useSelector((state: RootState) => state.chat);
-  const { chatId, messages } = useSelector(
-    (state: RootState) => state.chatData
-  );
-  useEffect(() => {
-    console.log("Messages in side bar", messages);
-  }, [messages]);
+  let {
+    chatId,
+    chatNumber: sidebarChatNumber,
+    messages,
+  } = useSelector((state: RootState) => state.chatData);
+
   const getHistory = async () => {
     try {
       const result = await axios.post("/api/getHistory", {
@@ -53,11 +57,18 @@ export function AppSidebar({ useremail }: { useremail: string }) {
     try {
       console.log("messages.length", messages.length);
       console.log("Current Messages", messages);
+      console.log("search param", searchparam);
+      if (!searchparam) {
+        sidebarChatNumber = Date.now().toString();
+      }
+      console.log("Side bar chat number", sidebarChatNumber);
       if (messages.length > 0) {
-        const response = await axios.post("/api/savenewchat", {
+        console.log("chatId currently I need",chatId)
+        const response = await axios.post("/api/savechat", {
           chatId,
           useremail,
-          chatNumber: Date.now(),
+          sidebarChatNumber,
+          searchparam,
           messages,
         });
         if (response.data) {
@@ -71,6 +82,7 @@ export function AppSidebar({ useremail }: { useremail: string }) {
       console.log(error);
     }
   };
+
   const handleNewChatClick = async () => {
     await saveNewChat();
     router.replace("/");
@@ -80,10 +92,13 @@ export function AppSidebar({ useremail }: { useremail: string }) {
     specificChatNumber: string
   ) => {
     console.log("History length", history.length);
-
-    //await saveChat();//here Existing chat will have different function
+    console.log("Messages", messages);
+    await saveNewChat(); //here Existing chat will have different function
     router.replace(`/c/${chatIdfromHistory}?chatNumber=${specificChatNumber}`);
   };
+  useEffect(() => {
+    console.log("useEffect sidebarChatNumber", sidebarChatNumber);
+  }, [sidebarChatNumber]);
   return (
     <Sidebar>
       <SidebarContent>
@@ -110,6 +125,10 @@ export function AppSidebar({ useremail }: { useremail: string }) {
                   <SidebarMenuItem
                     key={eachchat.chatNumber}
                     className={`${
+                      eachchat.chatNumber === searchparam
+                        ? "bg-gray-200 rounded-lg hover:bg-gray-300 "
+                        : ""
+                    }  ${
                       eachuserchat.ArrayOfChats.length > 0
                         ? "cursor-pointer"
                         : ""

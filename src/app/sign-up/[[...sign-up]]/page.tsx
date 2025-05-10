@@ -31,6 +31,7 @@ export default function Page() {
   const [verifying, setVerifying] = React.useState(false);
   const [code, setCode] = React.useState("");
   const router = useRouter();
+  const chatId = Date.now().toString();
 
   // Handle submission of the sign-up form
 
@@ -39,35 +40,13 @@ export default function Page() {
 
     if (!isLoaded) return;
 
-    // const form = e.target as HTMLFormElement;
-    // const captchaToken = (
-    //   form.querySelector(
-    //     'input[name="cf-turnstile-response"]'
-    //   ) as HTMLInputElement
-    // )?.value;
-
-    // if (!captchaToken) {
-    //   toast.error("Captcha verification failed. Please try again.");
-    //   return;
-    // }
-
     try {
-      // const verifyRes = await axios.post("/api/verifyuser", {
-      //   token: captchaToken,
-      // });
-
-      // if (!verifyRes.data.success) {
-      //   toast.error("Captcha verification failed");
-      //   return;
-      // }
-
       await signUp.create({
         emailAddress,
         password,
       });
-
       const response = await axios.post<ApiResponse>("/api/saveuser", {
-        chatId: "", // convert to string
+        chatId, // convert to string
         useremail: emailAddress,
         messages: [],
       });
@@ -103,7 +82,7 @@ export default function Page() {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        router.push("/"); //redirect to signin
+        router.replace(`/c/${chatId}`); //redirect to signin
       } else {
         // If the status is not complete, check why. User may need to
         // complete further steps.

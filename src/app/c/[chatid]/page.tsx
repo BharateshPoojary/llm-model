@@ -1,21 +1,26 @@
 "use client";
-import type { Metadata } from "next";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useChat } from "@ai-sdk/react";
 import { ChatLine } from "@/components/chat-line";
 import { Message } from "ai";
 import { scrollToBottom } from "@/lib/utils";
 import { useParams, useSearchParams } from "next/navigation";
-import { addMessage, setChatId } from "@/lib/features/ChatData";
-import { useDispatch } from "react-redux";
+import {
+  addBulkIds,
+  addMessage,
+  setChatId,
+  setChatNumber,
+} from "@/lib/features/ChatData";
+import { useDispatch, useSelector } from "react-redux";
 import { Chat, setHistory } from "@/lib/features/Chat";
 import { SignedIn, useClerk, useUser } from "@clerk/nextjs";
+import { RootState } from "@/lib/store";
 const ChatInput = () => {
   const { isSignedIn, user } = useUser();
   let userEmail: string = "";
@@ -26,14 +31,17 @@ const ChatInput = () => {
   }
 
   const dispatch = useDispatch();
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const params = useParams<{ chatid: string }>();
   const searchParams = useSearchParams();
+  const { bulkIds } = useSelector((state: RootState) => state.chatData);
   let search: string | null = null;
   if (searchParams.get("chatNumber")) {
     search = searchParams.get("chatNumber");
+    console.info("I need", search);
   }
   const {
     messages,
@@ -63,13 +71,15 @@ const ChatInput = () => {
   useEffect(() => {
     console.log("I am inside useEffect");
     dispatch(setChatId(params.chatid));
-    console.log(params.chatid);
+    console.log("params.chatId", params.chatid);
     const getHistory = async () => {
       try {
         const result = await axios.post("/api/getHistory", {
           useremail: userEmail,
         });
+        console.log("User Email", userEmail);
         const chats: Chat[] = result.data.history;
+        console.log("Chats for history", chats);
         dispatch(setHistory(chats));
       } catch (error) {
         console.log(error);
@@ -85,34 +95,26 @@ const ChatInput = () => {
         Chats.ArrayOfChats.map((eachchat) => {
           if (eachchat.chatNumber === search) {
             setMessages(eachchat.messages);
+            dispatch(
+              addBulkIds(eachchat.messages.map((eachids) => eachids.id))
+            );
           }
         });
       }
     };
     handleChat();
-  }, [dispatch, setMessages, params.chatid, search]);
+  }, [dispatch, setMessages, params.chatid, search, userEmail]);
 
   useEffect(() => {
     setTimeout(() => scrollToBottom(containerRef), 100);
     const addMessagetoState = async () => {
       if (messages.length > 0) {
-        console.log("Messages heere", messages);
         const { id, role, content } = messages[messages.length - 1];
-        const getChat = await axios.post("/api/getchat", {
-          useremail: userEmail,
-        });
-
-        if (getChat.data.chats) {
-          const chatmessages: Message[] =
-            getChat.data.chats.ArrayOfChats[
-              getChat.data.chats.ArrayOfChats.length - 1
-            ].messages;
-          console.log("Chat messages", chatmessages);
-          // if (!chatmessages.some((message) => message.id === id)) {
+        if (!bulkIds.includes(messages[messages.length - 1].id)) {
           dispatch(addMessage({ id, role, content }));
-          // }
-        } else {
-          dispatch(addMessage({ id, role, content }));
+          if (search) {
+            dispatch(setChatNumber(search));
+          }
         }
       }
     };
@@ -202,7 +204,7 @@ const ChatInput = () => {
 
   return (
     <SidebarProvider>
-      <AppSidebar useremail={userEmail} />
+      <AppSidebar useremail={userEmail} searchparam={search as string} />
       <main className="w-full">
         <SidebarTrigger />
         <Header />

@@ -37,7 +37,7 @@ export default function SignInForm() {
         console.log("I am In");
         //if signin success then push to dashboard no need to verify form your db as clerk will do for you
         await setActive({ session: signInAttempt.createdSessionId });
-        router.push("/");
+        router.replace("/");
       } else {
         //show toast message here signin failed plaease login with correct email and pwd
         // If the status is not complete, check why. User may need to
