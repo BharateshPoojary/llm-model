@@ -11,6 +11,7 @@ import { createRetrievalChain } from "langchain/chains/retrieval";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 type CallChainArgs = {
   question: string;
+  pdfId: string;
   chatHistory: string;
 };
 function formatChatHistory(chatHistory: string) {
@@ -24,7 +25,11 @@ function formatChatHistory(chatHistory: string) {
     index % 2 === 0 ? new HumanMessage(msg) : new AIMessage(msg)
   );
 } //This function will return an array differentiating Human Message and AI Message
-export async function callChain({ question, chatHistory }: CallChainArgs) {
+export async function callChain({
+  question,
+  pdfId,
+  chatHistory,
+}: CallChainArgs) {
   try {
     console.log("Question", question);
     const sanitizedQuestion = question.trim().replace(/\n/g, " ");
@@ -58,10 +63,10 @@ export async function callChain({ question, chatHistory }: CallChainArgs) {
     // It then sends the rephrased input to the vector store retriever and receives a list of documents relevant to this rephrased input.
     // Finnally, it returns this list of relevant documents.
     console.log("Retrieved documents", retrievedDocuments);
-    const context = retrievedDocuments
-      .map((doc: { pageContent: string }) => doc.pageContent)
-      .join("\n"); //getting the documents as an array where each document object  contains pagecontent which we needed (this is the text which is matched from vector db  by llm based on standalone prompt)
-    console.log("Context", context);
+    const contextMessages = retrievedDocuments.map(
+      (doc: { pageContent: string }) => new HumanMessage(doc.pageContent)
+    );
+
     // Answer question
     const qaPrompt = ChatPromptTemplate.fromMessages([
       ["system", QA_TEMPLATE],
@@ -75,12 +80,12 @@ export async function callChain({ question, chatHistory }: CallChainArgs) {
     //Its a chain where we are passing a list of documents (in type of context to llm ) so that it can use that to answer
 
     const ragChain = await createRetrievalChain({
-      retriever: vectorStore.asRetriever(),
+      retriever: vectorStore.asRetriever({ filter: { pdfId } }),
       combineDocsChain: QAChain,
     }); //this method will consider our input which will contain the context and our actual input ,also we will provide vector store so that it can find relevant document
     console.log("Rag chain", ragChain);
     const result = await ragChain.invoke({
-      context,
+      context: contextMessages,
       input: sanitizedQuestion,
     });
     // the flow is as follow

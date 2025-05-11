@@ -1,7 +1,7 @@
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
-export async function getChunkedDocsFromPDF(file: File) {
+export async function getChunkedDocsFromPDF(file: File, pdfId: string) {
   try {
     const loader = new PDFLoader(file); //creating a new instance of pdf loader class which inherits some other parent classes and this class includes a method named load() using which we will extract text form document
     //It taks the file object as argument which includes our file size and other data bytes required for extraction
@@ -13,8 +13,15 @@ export async function getChunkedDocsFromPDF(file: File) {
     //chunkOverlap is used to maintain the context It will consider 200 character from previous document and will add to the new doucment so that each chunk we can maintain the context between each chunked document
     // console.log("Document before chunking", docs);
     const chunkedDocs = await textSplitter.splitDocuments(docs); //textSplitter is having  splitDocuments method which will split the documents in chunks as per we specified in argument and once splitted it will return an array of Document which contain chunk objects
-    console.log("Document after chunking", chunkedDocs);
-    return chunkedDocs; //returning it so we can embed and store in our pinceconedb so that our llm can use that
+    const docswithPdfId = chunkedDocs.map((doc) => ({
+      ...doc,
+      metadata: {
+        ...doc.metadata,
+        pdfId,
+      },
+    }));
+    console.log("Document after docs with pdf Id", docswithPdfId);
+    return docswithPdfId; //returning it so we can embed and store in our pinceconedb so that our llm can use that
   } catch (error) {
     if (error) {
       throw new Error("PDF Chunking Failed");

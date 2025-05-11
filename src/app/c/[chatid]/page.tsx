@@ -37,6 +37,7 @@ const ChatInput = () => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const params = useParams<{ chatid: string }>();
   const searchParams = useSearchParams();
+  const [fileId, setFileId] = useState<string>();
   const { bulkIds } = useSelector((state: RootState) => state.chatData);
   let search: string | null = null;
   if (searchParams.get("chatNumber")) {
@@ -59,6 +60,7 @@ const ChatInput = () => {
           ...prev,
           {
             id: Date.now().toString(),
+            pdfId: fileId,
             role: "assistant",
             content: data.content,
           },
@@ -141,11 +143,13 @@ const ChatInput = () => {
       name: file.name,
       size: file.size,
     });
-
+    const generateFileId = Date.now().toString() + file.name;
+    setFileId(generateFileId);
     try {
       setisPDFUploading(true);
       const formPDFData = new FormData();
       formPDFData.append("pdfFile", file);
+      formPDFData.append("pdfId", generateFileId);
       const pdfUploadResponse = await axios.post("/api/upload", formPDFData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -169,6 +173,15 @@ const ChatInput = () => {
       if (!input.trim()) return;
 
       try {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            pdfId: fileId as string, // Attach the current fileId
+            role: "user",
+            content: input,
+          },
+        ]);
         handleSubmit(); // handleSubmit should handle the server request
       } catch (error) {
         console.error("Failed to send message:", error);
