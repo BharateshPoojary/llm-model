@@ -171,18 +171,9 @@ const ChatInput = () => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (!input.trim()) return;
-
+      console.log("File Id ", fileId);
       try {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now().toString(),
-            pdfId: fileId as string, // Attach the current fileId
-            role: "user",
-            content: input,
-          },
-        ]);
-        handleSubmit(); // handleSubmit should handle the server request
+        handleSubmit(e, { data: { pdfId: fileId as string } }); // handleSubmit should handle the server request
       } catch (error) {
         console.error("Failed to send message:", error);
       }

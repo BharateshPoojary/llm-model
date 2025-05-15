@@ -4,15 +4,8 @@ import { Message } from "ai";
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages } = await req.json();
-
-    const filenameWithId = messages[0];
-    console.log("Messages[0]", filenameWithId);
-    const pdfstring = filenameWithId.substring(
-      0,
-      filenameWithId.indexOf(".pdf") + 4
-    );
-    console.log("Pdf Id ", pdfstring); //It contains all messages user and assistant had made till now
+    const { messages, data } = await req.json();
+    console.log("Data", data);
     const formattedPreviousMessages = messages
       .slice(0, -1) //0 means starting element and -1 means ending element but slice method will not consider last element it will exclude last element and consider only remaining element
       .map((eachmessage: Message) => eachmessage.content?.trim()) //trimming each message to remove white spaces
@@ -24,7 +17,7 @@ export async function POST(req: NextRequest) {
     try {
       const stream = await callChain({
         question,
-        pdfId: pdfstring,
+        pdfId: data.pdfId,
         chatHistory: formattedPreviousMessages.join("\n"), //joining the  array elements which contain previous messages with /n
       }); //sending the question and chathistory to call chain for processing
       //This will return the context and answer

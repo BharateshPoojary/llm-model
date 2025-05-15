@@ -11,7 +11,7 @@ import { createRetrievalChain } from "langchain/chains/retrieval";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 type CallChainArgs = {
   question: string;
-  pdfId: string;
+  pdfId?: string;
   chatHistory: string;
 };
 function formatChatHistory(chatHistory: string) {
@@ -34,6 +34,22 @@ export async function callChain({
     console.log("Question", question);
     const sanitizedQuestion = question.trim().replace(/\n/g, " ");
     console.log("Sanitized question", sanitizedQuestion);
+    const GREETING_REGEX =
+      /^(hi|hello|hey|good (morning|afternoon|evening))[\s!.,]*$/i;
+    const UNRELATED_REGEX = /^(do you know|tell me about|what is|who is)/i;
+    if (GREETING_REGEX.test(sanitizedQuestion)) {
+      return {
+        context: [],
+        answer: "Hello! How can I assist you ?",
+      };
+    }
+    if (!pdfId || UNRELATED_REGEX.test(sanitizedQuestion)) {
+      return {
+        context: [],
+        answer:
+          "I'm tuned to only answer questions related to the uploaded PDF. Please upload a file or ask a question related to it.",
+      };
+    }
     const vectorStore = await getVectorStore(); //getting store instance
 
     // Convert chat history to BaseMessages
@@ -43,12 +59,12 @@ export async function callChain({
     const contextualizeQPrompt = ChatPromptTemplate.fromMessages([
       ["system", STANDALONE_QUESTION_TEMPLATE], //This is a system level instruction where we are providing standalone question template we can say it si provided by system to our llm
       new MessagesPlaceholder("chat_history"),
-      ["human", "{input}"], //this are the place holders for getting the dynaic data such as chat history and input provided to this prompt
+      ["human", "{input}"], //this are the place holders for getting the dynamic data such as chat history and input provided to this prompt
     ]); //here we are creating a standalone question from the input and chat history which will be replaced by the data provided by user
     const historyAwareRetriever = await createHistoryAwareRetriever({
       llm: nonStreamingModel, //It Uses nonStreamingModel to prepare a standalone question from the chathistory and input provided so that no context will be required here and then this
       //standalone question will be given to vector store to get reelvant documents from vector db
-      retriever: vectorStore.asRetriever(), //Uses the vector store retriever to get relevant documents.
+      retriever: vectorStore.asRetriever({ filter: { pdfId } }), //Uses the vector store retriever to get relevant documents.
       rephrasePrompt: contextualizeQPrompt, //This is the prompy we are giving to llm non streaming model
     });
     // Retrieve context (relevant documents)
