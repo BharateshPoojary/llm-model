@@ -34,7 +34,7 @@ export default function SignInForm() {
       // If sign-in process is complete, set the created session as active
       // and redirect the user
       if (signInAttempt.status === "complete") {
-        console.log("I am In");
+        // console.log("I am In");
         //if signin success then push to dashboard no need to verify form your db as clerk will do for you
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/");
@@ -50,18 +50,16 @@ export default function SignInForm() {
           JSON.stringify(signInAttempt, null, 2)
         );
       }
-    } catch (err: any) {
+    } catch (err) {
       //toast something went wrong from clerk server side
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
-      const error =
-        err?.errors?.[0]?.longMessage ||
-        err?.errors?.[0]?.message ||
-        err?.message ||
-        "Sign in failed. Please try again.";
+      if (err instanceof Error) {
+        const error = err?.message || "Sign in failed. Please try again.";
 
-      toast.error(error);
-      console.error("Sign-in error:", err);
+        toast.error(error);
+      }
+      // console.error("Sign-in error:", err);
     }
   };
 
@@ -115,7 +113,7 @@ export default function SignInForm() {
             Sign in
           </Button>
           <p className="text-center text-sm text-muted-foreground">
-            Don't have an Account ? <Link href={"/sign-up"}>Sign up</Link>
+            Don&apos;t have an Account ? <Link href={"/sign-up"}>Sign up</Link>
           </p>
         </form>
       </Card>

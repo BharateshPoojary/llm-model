@@ -40,11 +40,11 @@ export default function Page() {
 
     if (!isLoaded) return;
 
+    await signUp.create({
+      emailAddress,
+      password,
+    });
     try {
-      await signUp.create({
-        emailAddress,
-        password,
-      });
       const response = await axios.post<ApiResponse>("/api/saveuser", {
         chatId, // convert to string
         useremail: emailAddress,
@@ -60,9 +60,9 @@ export default function Page() {
         setVerifying(true);
       }
     } catch (error) {
-      error instanceof Error
-        ? toast.error(error.message)
-        : toast.error("Something went wrong");
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     }
   };
 
@@ -88,10 +88,12 @@ export default function Page() {
         // complete further steps.
         console.error(JSON.stringify(signUpAttempt, null, 2));
       }
-    } catch (err: any) {
+    } catch (error) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
-      console.error("Error:", JSON.stringify(err, null, 2));
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     }
   };
 

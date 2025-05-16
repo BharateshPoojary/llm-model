@@ -4,8 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import StoreProvider from "./StoreProvider";
-import { ClerkProvider, SignedIn, useClerk } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({

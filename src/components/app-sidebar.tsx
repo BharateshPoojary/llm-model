@@ -34,12 +34,11 @@ export function AppSidebar({
   const router = useRouter();
   const dispatch = useDispatch();
   const { history } = useSelector((state: RootState) => state.chat);
-  let {
-    chatId,
-    chatNumber: sidebarChatNumber,
-    messages,
-  } = useSelector((state: RootState) => state.chatData);
 
+  const { chatId, chatNumber, messages } = useSelector(
+    (state: RootState) => state.chatData
+  );
+  let sidebarChatNumber = chatNumber;
   const getHistory = async () => {
     try {
       const result = await axios.post("/api/getHistory", {
@@ -63,7 +62,7 @@ export function AppSidebar({
       }
       console.log("Side bar chat number", sidebarChatNumber);
       if (messages.length > 0) {
-        console.log("chatId currently I need",chatId)
+        console.log("chatId currently I need", chatId);
         const response = await axios.post("/api/savechat", {
           chatId,
           useremail,

@@ -121,7 +121,7 @@ const ChatInput = () => {
       }
     };
     addMessagetoState();
-  }, [dispatch, messages]);
+  }, [dispatch, bulkIds, search, messages]);
 
   const [isPDFUploading, setisPDFUploading] = useState(false);
   const [fileInfo, setFileInfo] = useState<{
