@@ -35,7 +35,33 @@ export default function Page() {
   const [showCaptcha, setShowCaptcha] = React.useState(false);
 
   // Handle submission of the sign-up form
+  React.useEffect(() => {
+    if (showCaptcha) {
+      (async () => {
+        try {
+          const response = await axios.post<ApiResponse>("/api/saveuser", {
+            chatId, // convert to string
+            useremail: emailAddress,
+            messages: [],
+          });
+          if (response.data) {
+            toast.success(response.data.message);
+            console.log("Response", response.data);
+            await signUp?.prepareEmailAddressVerification({
+              strategy: "email_code",
+            });
 
+            setVerifying(true);
+          }
+        } catch (error) {
+          console.error(error);
+          toast.error(
+            error instanceof Error ? error.message : "Something went wrong"
+          );
+        }
+      })();
+    }
+  }, [showCaptcha]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -46,27 +72,6 @@ export default function Page() {
       password,
     });
     setShowCaptcha(true);
-    try {
-      const response = await axios.post<ApiResponse>("/api/saveuser", {
-        chatId, // convert to string
-        useremail: emailAddress,
-        messages: [],
-      });
-      if (response.data) {
-        toast.success(response.data.message);
-        console.log("Response", response.data);
-        await signUp.prepareEmailAddressVerification({
-          strategy: "email_code",
-        });
-
-        setVerifying(true);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error ? error.message : "Something went wrong"
-      );
-    }
   };
 
   // Handle the submission of the verification form
