@@ -32,6 +32,7 @@ export default function Page() {
   const [code, setCode] = React.useState("");
   const router = useRouter();
   const chatId = Date.now().toString();
+  const [showCaptcha, setShowCaptcha] = React.useState(false);
 
   // Handle submission of the sign-up form
 
@@ -44,6 +45,7 @@ export default function Page() {
       emailAddress,
       password,
     });
+    setShowCaptcha(true);
     try {
       const response = await axios.post<ApiResponse>("/api/saveuser", {
         chatId, // convert to string
@@ -198,11 +200,14 @@ export default function Page() {
             </div>
 
             {/* <div id="clerk-captcha" /> */}
-            <div
-              id="clerk-captcha"
-              data-cl-theme="dark"
-              data-cl-size="flexible"
-            />
+            {showCaptcha && (
+              <div
+                id="clerk-captcha"
+                data-cl-theme="dark"
+                data-cl-size="flexible"
+              />
+            )}
+
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
