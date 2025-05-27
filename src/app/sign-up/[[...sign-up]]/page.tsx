@@ -35,40 +35,43 @@ export default function Page() {
 
   // Handle submission of the sign-up form
 
-  
-  
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isLoaded) return;
-    
-    await signUp.create({
+
+    const response = await signUp.create({
       emailAddress,
       password,
     });
+    console.log("Response Id", response.id)
+    if (response.id) {
 
-    try {
-      const response = await axios.post<ApiResponse>("/api/saveuser", {
-        chatId, // convert to string
-        useremail: emailAddress,
-        messages: [],
-      });
-      if (response.data) {
-        toast.success(response.data.message);
-        console.log("Response", response.data);
-        await signUp?.prepareEmailAddressVerification({
-          strategy: "email_code",
+      try {
+        const response = await axios.post<ApiResponse>("/api/saveuser", {
+          chatId, // convert to string
+          useremail: emailAddress,
+          messages: [],
         });
-  
-        setVerifying(true);
+        if (response.data) {
+          toast.success(response.data.message);
+          console.log("Response", response.data);
+          await signUp?.prepareEmailAddressVerification({
+            strategy: "email_code",
+          });
+
+          setVerifying(true);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error ? error.message : "Something went wrong"
-      );
-    }
-  };
+    };
+  }
 
   // Handle the submission of the verification form
   const handleVerify = async (e: React.FormEvent) => {
@@ -201,13 +204,13 @@ export default function Page() {
             </div>
 
             {/* <div id="clerk-captcha" /> */}
-         
-              <div
-                id="clerk-captcha"
-                data-cl-theme="dark"
-                data-cl-size="flexible"
-              />
-          
+
+            <div
+              id="clerk-captcha"
+              data-cl-theme="dark"
+              data-cl-size="flexible"
+            />
+
 
             <Button
               type="submit"
