@@ -60,6 +60,7 @@ export default function Page() {
         setVerifying(true);
       }
     } catch (error) {
+      console.error(error);
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"
       );
@@ -196,12 +197,12 @@ export default function Page() {
               </div>
             </div>
 
-            <div id="clerk-captcha" />
-            {/* <div
+            {/* <div id="clerk-captcha" /> */}
+            <div
               id="clerk-captcha"
               data-cl-theme="dark"
               data-cl-size="flexible"
-            /> */}
+            />
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
