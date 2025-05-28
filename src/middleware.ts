@@ -7,6 +7,8 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   if (!userId) {
     const redirectUrl = new URL("/sign-in", req.url);
     return NextResponse.redirect(redirectUrl);
+  } else if (userId && req.nextUrl.pathname.startsWith("/c")) {
+    return NextResponse.next();
   } else {
     const chatId = Date.now();
     console.log("chatId", chatId);
