@@ -10,7 +10,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     const newUrl = new URL(`/c/${chatId}`, req.url);
     return NextResponse.redirect(newUrl);
   }
-  if (!userId && req.nextUrl.pathname.startsWith("/c(.*)")) {
+  if (!userId && req.nextUrl.pathname.startsWith("/c/:path*")) {
     const redirectUrl = new URL("/sign-in", req.url);
     return NextResponse.redirect(redirectUrl);
   }
@@ -20,7 +20,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 export const config = {
   matcher: [
     "/",
-    "/c(.*)",
+    "/c/:path*",
     "/sign-in",
     "/sign-Up",
     "/((?!api|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
