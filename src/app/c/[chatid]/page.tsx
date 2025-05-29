@@ -202,10 +202,19 @@ const ChatInput = () => {
         <h1 className="font-bold text-lg">Bharat LLM App</h1>
         <SignedIn>
           <Button
-            onClick={() => {
-              setIsLoading(true);
-              signOut();
-              setIsLoading(false);
+            onClick={async () => {
+              try {
+                setIsLoading(true);
+                await signOut();
+              } catch (error) {
+                toast.error(
+                  error instanceof Error
+                    ? error.message
+                    : "Something went wrong"
+                );
+              } finally {
+                setIsLoading(false);
+              }
             }}
           >
             {isLoading ? <Loader className="animate-spin" /> : "Sign Out"}{" "}
