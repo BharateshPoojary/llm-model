@@ -202,7 +202,7 @@ const ChatInput = () => {
         <h1 className="font-bold text-lg ">Bharat LLM App</h1>
         <SignedIn>
           <Button
-            className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
+            className="w-20 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
             onClick={async () => {
               try {
                 setIsLoading(true);
