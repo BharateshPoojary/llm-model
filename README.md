@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## PDF Summarizer using LLM
+A powerful LLM-based PDF summarizer web application that allows users to interact with the content of any uploaded PDF using natural language. Built to enhance productivity by enabling quick content extraction, Q&A, and conversation history.
 
-## Getting Started
+## Features
+🔐 User Authentication
+Sign up using your email and password. After registration, enter the verification code to access the app.
 
-First, run the development server:
+💬 Chat with PDF
+Upload a PDF document and ask questions based on its content. The AI will respond using the context from the uploaded file.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🧠 Powered by LLM
+Uses a Large Language Model to understand and answer user queries from the PDF file.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+💾 Chat History
+All your past interactions are saved. You can view or continue previous conversations or start a new one with a single click.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🛠️ How It Works
+1. Sign Up
+Create an account using your email and password. A verification code will be sent to complete the signup process.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Upload PDF
+Once logged in, you'll land on the chat interface. Upload a PDF file to begin interacting with its content.
 
-## Learn More
+3. Ask Questions
+Type any question related to the PDF. The LLM will respond based on the file content.
 
-To learn more about Next.js, take a look at the following resources:
+4. Chat Management
+Start a new chat or revisit any of your existing chat sessions from the sidebar.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+📦 Tech Stack
+Frontend: React, TypeScript, Tailwind CSS, ShadCN UI
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Authentication: Clerk
 
-## Deploy on Vercel
+Backend: Node.js / Serverless Functions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+AI: OpenAI / Gemini (LLM APIs)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Storage: AWS S3 or similar for file uploads (if applicable)
