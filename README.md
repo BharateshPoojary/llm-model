@@ -1,19 +1,19 @@
 ## PDF Summarizer using LLM
 A powerful LLM-based PDF summarizer web application that allows users to interact with the content of any uploaded PDF.
 ## Features
-🔐 ### User Authentication
+### 🔐  User Authentication
 Sign up using your email and password. After registration, enter the verification code to access the app.
 
-💬 ### Chat with PDF
+### 💬  Chat with PDF
 Upload a PDF document and ask questions based on its content. The AI will respond using the context from the uploaded file.
 
-🧠 ### Powered by LLM
+### 🧠  Powered by LLM
 Uses a Large Language Model to understand and answer user queries from the PDF file.
 
-💾 ### Chat History
+### 💾  Chat History
 All your past interactions are saved. You can view or continue previous conversations or start a new one with a single click.
 
-🛠️ How It Works
+## 🛠️ How It Works
 ### 1. Sign Up
 Create an account using your email and password. A verification code will be sent to complete the signup process.
 
