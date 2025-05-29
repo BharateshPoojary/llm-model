@@ -3,7 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Send } from "lucide-react";
+import { Loader, Loader2, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useChat } from "@ai-sdk/react";
@@ -35,6 +35,7 @@ const ChatInput = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const params = useParams<{ chatid: string }>();
   const searchParams = useSearchParams();
   const [fileId, setFileId] = useState<string>();
@@ -200,7 +201,15 @@ const ChatInput = () => {
       >
         <h1 className="font-bold text-lg">Bharat LLM App</h1>
         <SignedIn>
-          <Button onClick={() => signOut()}>Sign Out</Button>
+          <Button
+            onClick={() => {
+              setIsLoading(true);
+              signOut();
+              setIsLoading(false);
+            }}
+          >
+            {isLoading ? <Loader className="animate-spin" /> : "Sign Out"}{" "}
+          </Button>
         </SignedIn>
       </header>
     );
