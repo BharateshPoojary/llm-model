@@ -3,7 +3,7 @@
 import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { Mail, Lock, MailCheck } from "lucide-react";
+import { Mail, Lock, MailCheck, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,8 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [emailAddress, setEmailAddress] = React.useState("");
+  const [isSavingUser, setIsSavingUser] = React.useState<boolean>(false);
+  const [isVerifyingUser, setIsVerifyingUser] = React.useState<boolean>(false);
   const [password, setPassword] = React.useState("");
   const [verifying, setVerifying] = React.useState(false);
   const [code, setCode] = React.useState("");
@@ -41,6 +43,7 @@ export default function Page() {
     if (!isLoaded) return;
 
     try {
+      setIsSavingUser(true);
       await signUp.create({
         emailAddress,
         password,
@@ -64,6 +67,8 @@ export default function Page() {
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"
       );
+    } finally {
+      setIsSavingUser(false);
     }
   };
 
@@ -74,6 +79,7 @@ export default function Page() {
     if (!isLoaded) return;
 
     try {
+      setIsVerifyingUser(true);
       // Use the code the user provided to attempt verification
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
         code,
@@ -95,6 +101,8 @@ export default function Page() {
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"
       );
+    } finally {
+      setIsVerifyingUser(false);
     }
   };
 
@@ -138,7 +146,11 @@ export default function Page() {
                   </InputOTP>
                 </div>
                 <Button type="submit" className="w-full">
-                  Verify
+                  {isVerifyingUser ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Verify"
+                  )}
                 </Button>
               </form>
             </CardContent>
@@ -209,7 +221,11 @@ export default function Page() {
               type="submit"
               className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              Create Account
+              {isSavingUser ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Create Account"
+              )}
             </Button>
           </form>
 
