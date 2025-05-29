@@ -10,10 +10,15 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     const newUrl = new URL(`/c/${chatId}`, req.url);
     return NextResponse.redirect(newUrl);
   }
-  if (!userId && req.nextUrl.pathname.startsWith("/c")) {
+  if (
+    !userId &&
+    (req.nextUrl.pathname.startsWith("/c") ||
+      req.nextUrl.pathname.startsWith("/"))
+  ) {
     const redirectUrl = new URL("/sign-in", req.url);
     return NextResponse.redirect(redirectUrl);
   }
+
   return NextResponse.next(); //passing the control to the next middleware
 });
 
