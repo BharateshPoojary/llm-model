@@ -40,11 +40,11 @@ export default function Page() {
 
     if (!isLoaded) return;
 
-    await signUp.create({
-      emailAddress,
-      password,
-    });
     try {
+      await signUp.create({
+        emailAddress,
+        password,
+      });
       const response = await axios.post<ApiResponse>("/api/saveuser", {
         chatId, // convert to string
         useremail: emailAddress,
