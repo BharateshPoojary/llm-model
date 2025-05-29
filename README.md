@@ -1,6 +1,5 @@
 ## PDF Summarizer using LLM
-A powerful LLM-based PDF summarizer web application that allows users to interact with the content of any uploaded PDF using natural language. Built to enhance productivity by enabling quick content extraction, Q&A, and conversation history.
-
+A powerful LLM-based PDF summarizer web application that allows users to interact with the content of any uploaded PDF.
 ## Features
 🔐 User Authentication
 Sign up using your email and password. After registration, enter the verification code to access the app.
@@ -28,12 +27,9 @@ Type any question related to the PDF. The LLM will respond based on the file con
 Start a new chat or revisit any of your existing chat sessions from the sidebar.
 
 📦 Tech Stack
-Frontend: React, TypeScript, Tailwind CSS, ShadCN UI
-
+Frontend: Next.js, TypeScript, Tailwind CSS, ShadCN UI
 Authentication: Clerk
+Backend: Next.js
+AI Tools:  Gemini (Google Gen. AI) , LangChain , Vercel AI SDK
 
-Backend: Node.js / Serverless Functions
-
-AI: OpenAI / Gemini (LLM APIs)
-
-Storage: AWS S3 or similar for file uploads (if applicable)
+## NOTE: Do not ask question apart from the content of PDF you uploaded as this llm is tuned only  to answer about the user uploaded pdf.
