@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## PDF Summarizer using LLM
+A powerful LLM-based PDF summarizer web application that allows users to interact with the content of any uploaded PDF.
+## Features
+### 🔐  User Authentication
+Sign up using your email and password. After registration, enter the verification code to access the app.
 
-## Getting Started
+### 💬  Chat with PDF
+Upload a PDF document and ask questions based on its content. The AI will respond using the context from the uploaded file.
 
-First, run the development server:
+### 🧠  Powered by LLM
+Uses a Large Language Model to understand and answer user queries from the PDF file.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 💾  Chat History
+All your past interactions are saved. You can view or continue previous conversations or start a new one with a single click.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ How It Works
+### 1. Sign Up
+Create an account using your email and password. A verification code will be sent to complete the signup process.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Upload PDF
+Once logged in, you'll land on the chat interface. Upload a PDF file to begin interacting with its content.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Ask Questions
+Type any question related to the PDF. The LLM will respond based on the file content.
 
-## Learn More
+### 4. Chat Management
+Start a new chat or revisit any of your existing chat sessions from the sidebar.
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Tech Stack
+### Frontend: Next.js, TypeScript, Tailwind CSS, ShadCN UI
+### Authentication: Clerk
+### Backend: Next.js
+### AI Tools:  Gemini (Google Gen. AI) , LangChain , Vercel AI SDK
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### NOTE: Do not ask question apart from the content of PDF you uploaded as this llm is tuned only  to answer about the user uploaded pdf.
