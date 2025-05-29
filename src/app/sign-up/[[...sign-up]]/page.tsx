@@ -145,7 +145,10 @@ export default function Page() {
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
+                >
                   {isVerifyingUser ? (
                     <Loader className="animate-spin" />
                   ) : (

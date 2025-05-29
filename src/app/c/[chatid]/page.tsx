@@ -199,9 +199,10 @@ const ChatInput = () => {
           padding: 20,
         }}
       >
-        <h1 className="font-bold text-lg">Bharat LLM App</h1>
+        <h1 className="font-bold text-lg ">Bharat LLM App</h1>
         <SignedIn>
           <Button
+            className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
             onClick={async () => {
               try {
                 setIsLoading(true);
@@ -242,7 +243,7 @@ const ChatInput = () => {
               <Button
                 onClick={() => uploadRef.current?.click()}
                 size="icon"
-                className="p-2 cursor-pointer"
+                className=" p-2 cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 {isPDFUploading ? (
                   <Loader2 className="animate-spin" />
@@ -287,7 +288,7 @@ const ChatInput = () => {
                     }
                     type="submit"
                     size="icon"
-                    className="p-2 cursor-pointer"
+                    className=" p-2 cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
                     onClick={handleSend}
                   >
                     <Send className="w-5 h-5" />
