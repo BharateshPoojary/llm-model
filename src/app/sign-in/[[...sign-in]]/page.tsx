@@ -4,7 +4,7 @@ import * as React from "react";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Lock, Mail } from "lucide-react";
+import { Loader, Lock, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,6 +15,7 @@ export default function SignInForm() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   // const { signOut } = useClerk();
 
   // Handle the submission of the sign-in form
@@ -25,6 +26,7 @@ export default function SignInForm() {
 
     // Start the sign-in process using the email and password provided
     try {
+      setIsLoading(true);
       console.log("Email", email, "Password", password);
       const signInAttempt = await signIn.create({
         identifier: email,
@@ -60,6 +62,8 @@ export default function SignInForm() {
         toast.error(error);
       }
       // console.error("Sign-in error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -110,7 +114,7 @@ export default function SignInForm() {
             type="submit"
             className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white transition-all duration-200 shadow-md hover:shadow-lg"
           >
-            Sign in
+            {isLoading ? <Loader className="animate-spin" /> : "Sign in"}
           </Button>
           <p className="text-center text-sm text-muted-foreground">
             Don&apos;t have an Account ? <Link href={"/sign-up"}>Sign up</Link>
