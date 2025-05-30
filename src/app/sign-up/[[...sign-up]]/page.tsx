@@ -81,7 +81,12 @@ export default function Page() {
         const response = await axios.post<ApiResponse>("/api/saveuser", {
           chatId, // convert to string
           useremail: emailAddress,
-          ArrayOfChats: [],
+          ArrayOfChats: [
+            {
+              chatNumber: "",
+              messages: [],
+            },
+          ],
         });
         if (response.data.success) {
           toast.success(response.data.message);

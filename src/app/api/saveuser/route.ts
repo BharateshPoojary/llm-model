@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       }
     );
   }
+
   const saveUser = await new ChatModel({
     chatId,
     useremail,
