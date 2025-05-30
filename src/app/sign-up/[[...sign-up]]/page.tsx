@@ -48,13 +48,11 @@ export default function Page() {
         emailAddress,
         password,
       });
-
-      const initateVerification = await signUp.prepareEmailAddressVerification({
+      await signUp.prepareEmailAddressVerification({
         strategy: "email_code",
       });
-      if (initateVerification.status === "complete") {
-        setVerifying(true);
-      }
+
+      setVerifying(true);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"
