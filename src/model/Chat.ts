@@ -30,10 +30,7 @@ const ChatSchema = new Schema<Chat>(
   {
     chatId: { type: String, unique: true, required: true },
     useremail: { type: String, unique: true, required: true },
-    ArrayOfChats: {
-      type: [ChatItemSchema],
-      default: [],
-    },
+    ArrayOfChats: [ChatItemSchema],
   },
   { timestamps: true }
 );
