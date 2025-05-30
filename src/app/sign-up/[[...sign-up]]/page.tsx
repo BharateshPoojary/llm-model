@@ -7,6 +7,7 @@ import { Mail, Lock, MailCheck, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ClerkAPIError } from "@clerk/types";
 import {
   Card,
   CardContent,
@@ -90,11 +91,17 @@ export default function Page() {
         router.replace(`/c/${chatId}`);
       }
     } catch (error) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
       console.error(error);
+
       const axiosError = error as AxiosError<ApiResponse>;
-      toast.error(axiosError.response?.data.message ?? "Something went wrong");
+
+      if (axiosError.response?.data?.message) {
+        toast.error(axiosError.response.data.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       setIsVerifyingUser(false);
     }
