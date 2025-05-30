@@ -25,14 +25,15 @@ export async function POST(request: NextRequest) {
       useremail,
       ArrayOfChats,
     }).save();
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Account verified successfully",
-      },
-      { status: 201 }
-    );
+    if (saveUser) {
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Account verified successfully",
+        },
+        { status: 201 }
+      );
+    }
   } catch (error) {
     console.error("Server Error:", error); // 👈 helpful debug output
     return NextResponse.json(
