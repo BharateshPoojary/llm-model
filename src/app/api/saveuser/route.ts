@@ -3,8 +3,8 @@ import { ChatModel } from "@/model/Chat";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const { chatId, useremail, messages } = await request.json();
-  console.log(chatId, useremail, messages);
+  const { chatId, useremail, ArrayOfChats } = await request.json();
+  console.log(chatId, useremail, ArrayOfChats);
   await dbConnection();
   const isExistingUser = await ChatModel.findOne({ useremail });
   if (isExistingUser) {
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   const saveUser = await new ChatModel({
     chatId,
     useremail,
-    messages,
+    ArrayOfChats,
   }).save();
   if (saveUser) {
     return Response.json(
