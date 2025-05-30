@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader, Loader2, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useChat } from "@ai-sdk/react";
 import { ChatLine } from "@/components/chat-line";
 import { Message } from "ai";
@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Chat, setHistory } from "@/lib/features/Chat";
 import { SignedIn, useClerk, useUser } from "@clerk/nextjs";
 import { RootState } from "@/lib/store";
+import { ApiResponse } from "@/types/ApiResponse";
 const ChatInput = () => {
   const { isSignedIn, user } = useUser();
   let userEmail: string = "";
@@ -85,24 +86,34 @@ const ChatInput = () => {
         console.log("Chats for history", chats);
         dispatch(setHistory(chats));
       } catch (error) {
-        console.log(error);
+        const axiosError = error as AxiosError<ApiResponse>;
+        toast.error(
+          axiosError.response?.data.message ?? "Something went wrong"
+        );
       }
     };
     getHistory();
     const handleChat = async () => {
-      const getChat = await axios.post("/api/getchat", {
-        useremail: userEmail,
-      });
-      const Chats: Chat = getChat.data.chats;
-      if (Chats) {
-        Chats.ArrayOfChats.map((eachchat) => {
-          if (eachchat.chatNumber === search) {
-            setMessages(eachchat.messages);
-            dispatch(
-              addBulkIds(eachchat.messages.map((eachids) => eachids.id))
-            );
-          }
+      try {
+        const getChat = await axios.post("/api/getchat", {
+          useremail: userEmail,
         });
+        const Chats: Chat = getChat.data.chats;
+        if (Chats) {
+          Chats.ArrayOfChats.map((eachchat) => {
+            if (eachchat.chatNumber === search) {
+              setMessages(eachchat.messages);
+              dispatch(
+                addBulkIds(eachchat.messages.map((eachids) => eachids.id))
+              );
+            }
+          });
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse>;
+        toast.error(
+          axiosError.response?.data.message ?? "Something went wrong"
+        );
       }
     };
     handleChat();
@@ -160,9 +171,8 @@ const ChatInput = () => {
         toast("File uploaded successfully");
       }
     } catch (error) {
-      if (error instanceof Error) {
-        toast(`Error uploading file${error.message}`);
-      }
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(axiosError.response?.data.message ?? "Something went wrong");
     } finally {
       setisPDFUploading(false);
     }

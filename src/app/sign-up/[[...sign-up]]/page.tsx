@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { toast } from "sonner";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import {
   InputOTP,
@@ -48,22 +48,14 @@ export default function Page() {
         emailAddress,
         password,
       });
-      const response = await axios.post<ApiResponse>("/api/saveuser", {
-        chatId, // convert to string
-        useremail: emailAddress,
-        messages: [],
-      });
-      if (response.data) {
-        toast.success(response.data.message);
-        console.log("Response", response.data);
-        await signUp.prepareEmailAddressVerification({
-          strategy: "email_code",
-        });
 
+      const initateVerification = await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
+      if (initateVerification.status === "complete") {
         setVerifying(true);
       }
     } catch (error) {
-      console.error(error);
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"
       );
@@ -88,19 +80,23 @@ export default function Page() {
       // If verification was completed, set the session to active
       // and redirect the user
       if (signUpAttempt.status === "complete") {
+        const response = await axios.post<ApiResponse>("/api/saveuser", {
+          chatId, // convert to string
+          useremail: emailAddress,
+          messages: [],
+        });
+
+        toast.success(response.data.message);
+        console.log("Response", response.data);
         await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace(`/c/${chatId}`); //redirect to signin
-      } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-        console.error(JSON.stringify(signUpAttempt, null, 2));
+        router.replace(`/c/${chatId}`);
       }
     } catch (error) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
-      toast.error(
-        error instanceof Error ? error.message : "Something went wrong"
-      );
+      console.error(error);
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(axiosError.response?.data.message ?? "Something went wrong");
     } finally {
       setIsVerifyingUser(false);
     }

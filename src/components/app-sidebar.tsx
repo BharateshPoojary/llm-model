@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { setHistory } from "@/lib/features/Chat";
 import { clearMessage } from "@/lib/features/ChatData";
 import { useEffect } from "react";
+import { ApiResponse } from "@/types/ApiResponse";
+import { toast } from "sonner";
 const items = [
   {
     title: "New Chat",
@@ -48,7 +50,8 @@ export function AppSidebar({
       console.log("History data", chats);
       dispatch(setHistory(chats));
     } catch (error) {
-      console.log(error);
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(axiosError.response?.data.message ?? "Something went wrong");
     }
   };
   const saveNewChat = async () => {
@@ -63,6 +66,7 @@ export function AppSidebar({
       console.log("Side bar chat number", sidebarChatNumber);
       if (messages.length > 0) {
         console.log("chatId currently I need", chatId);
+
         const response = await axios.post("/api/savechat", {
           chatId,
           useremail,
@@ -78,7 +82,8 @@ export function AppSidebar({
         }
       }
     } catch (error) {
-      console.log(error);
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(axiosError.response?.data.message ?? "Something went wrong");
     }
   };
 
