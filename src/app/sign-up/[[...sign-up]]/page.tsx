@@ -84,7 +84,13 @@ export default function Page() {
           ArrayOfChats: [
             {
               chatNumber: "",
-              messages: [],
+              messages: [
+                {
+                  id: "",
+                  role: "",
+                  content: "",
+                },
+              ],
             },
           ],
         });
