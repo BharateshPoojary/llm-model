@@ -71,10 +71,10 @@ export default function Page() {
     try {
       setIsVerifyingUser(true);
       // Use the code the user provided to attempt verification
+
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
         code,
       });
-
       // If verification was completed, set the session to active
       // and redirect the user
       if (signUpAttempt.status === "complete") {
@@ -83,11 +83,12 @@ export default function Page() {
           useremail: emailAddress,
           messages: [],
         });
-
-        toast.success(response.data.message);
-        console.log("Response", response.data);
-        await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace(`/c/${chatId}`);
+        if (response.data.success) {
+          toast.success(response.data.message);
+          console.log("Response", response.data);
+          await setActive({ session: signUpAttempt.createdSessionId });
+          router.replace(`/c/${chatId}`);
+        }
       }
     } catch (error) {
       console.error(error);

@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     return Response.json(
       {
         success: true,
-        message: "Account created successfully",
+        message: "Account verified successfully",
       },
       {
         status: 201,
