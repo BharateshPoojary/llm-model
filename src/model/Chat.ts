@@ -7,7 +7,7 @@ export interface Message {
 }
 
 const MessageSchema = new Schema<Message>({
-  id: { type: String, unique: true },
+  id: { type: String },
   role: { type: String },
   content: { type: String },
 });
@@ -17,7 +17,7 @@ export interface ChatItem {
   messages: Message[];
 }
 const ChatItemSchema = new Schema<ChatItem>({
-  chatNumber: { type: String, unique: true },
+  chatNumber: { type: String },
   messages: [MessageSchema],
 });
 export interface Chat extends Document {
@@ -28,9 +28,9 @@ export interface Chat extends Document {
 
 const ChatSchema = new Schema<Chat>(
   {
-    chatId: { type: String, unique: true, required: true },
-    useremail: { type: String, unique: true, required: true },
-    ArrayOfChats: [ChatItemSchema],
+    chatId: { type: String, required: true },
+    useremail: { type: String, required: true },
+    ArrayOfChats: { type: [ChatItemSchema], default: [] },
   },
   { timestamps: true }
 );

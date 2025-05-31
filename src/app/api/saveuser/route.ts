@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       useremail,
       ArrayOfChats,
     }).save();
+    console.log(saveUser);
     if (saveUser) {
       return NextResponse.json(
         {
