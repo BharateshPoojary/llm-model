@@ -48,7 +48,7 @@ Start a new chat or revisit any of your existing chat sessions from the sidebar.
  npm install
 ```
 3. Set Environment Variables
-   Create a .env.local file in the root of your directory and add the follwing keys:
+   #### Create a .env.local file in the root of your directory and add the following keys:
 ```bash
 # MongoDB URI
 MONGODB_URI="mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER>.mongodb.net/<DATABASE_NAME>"
