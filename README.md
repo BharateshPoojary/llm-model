@@ -38,6 +38,46 @@ Start a new chat or revisit any of your existing chat sessions from the sidebar.
 ## Getting Started
 
 1.Clone the repository
-```bash git clone https://github.com/BharateshPoojary/llm-model.git
+```bash
+ git clone https://github.com/BharateshPoojary/llm-model.git
  cd llm-model
+```
+
+2.Install Dependencies 
+```bash
+ npm install
+```
+3. Set Environment Variables
+```bash
+# MongoDB URI
+MONGODB_URI="mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER>.mongodb.net/<DATABASE_NAME>"
+
+# Gemini API Key
+GEMINI_API_KEY="<YOUR_GEMINI_API_KEY>"
+
+# Pinecone API Key
+PINECONE_API_KEY="<YOUR_PINECONE_API_KEY>"
+
+# Clerk (Auth) Keys
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="<YOUR_CLERK_PUBLISHABLE_KEY>"
+CLERK_SECRET_KEY="<YOUR_CLERK_SECRET_KEY>"
+
+# Cloudflare Turnstile Keys
+NEXT_PUBLIC_CLOUDFLARE_SITE_KEY="<YOUR_CLOUDFLARE_SITE_KEY>"
+TURNSTILE_SECRET_KEY="<YOUR_TURNSTILE_SECRET_KEY>"
+
+```
+4. Run The App
+```bash
+ npm run dev
+```
+### Visit:http://localhost:3000
+
+## 📫 Contributing
+### Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## 📄 License
+### This project is open-source under the MIT License.
+
+
 ### NOTE: Do not ask question apart from the content of PDF you uploaded as this llm is tuned only  to answer about the user uploaded pdf.
