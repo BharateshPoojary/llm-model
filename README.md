@@ -48,6 +48,7 @@ Start a new chat or revisit any of your existing chat sessions from the sidebar.
  npm install
 ```
 3. Set Environment Variables
+   Create a .env.local file in the root of your directory and add the follwing keys:
 ```bash
 # MongoDB URI
 MONGODB_URI="mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER>.mongodb.net/<DATABASE_NAME>"
@@ -62,16 +63,12 @@ PINECONE_API_KEY="<YOUR_PINECONE_API_KEY>"
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="<YOUR_CLERK_PUBLISHABLE_KEY>"
 CLERK_SECRET_KEY="<YOUR_CLERK_SECRET_KEY>"
 
-# Cloudflare Turnstile Keys
-NEXT_PUBLIC_CLOUDFLARE_SITE_KEY="<YOUR_CLOUDFLARE_SITE_KEY>"
-TURNSTILE_SECRET_KEY="<YOUR_TURNSTILE_SECRET_KEY>"
-
 ```
 4. Run The App
 ```bash
  npm run dev
 ```
-### Visit:http://localhost:3000
+### Visit: http://localhost:3000
 
 ## 📫 Contributing
 ### Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
