@@ -13,6 +13,9 @@ Uses a Large Language Model to understand and answer user queries from the PDF f
 ### 💾  Chat History
 All your past interactions are saved. You can view or continue previous conversations or start a new one with a single click.
 
+## Preview
+![pdf-summarizer](https://github.com/user-attachments/assets/6ddd62dc-6514-4d56-b084-9784b5474ddc)
+
 ## 🛠️ How It Works
 ### 1. Sign Up
 Create an account using your email and password. A verification code will be sent to complete the signup process.
@@ -32,4 +35,9 @@ Start a new chat or revisit any of your existing chat sessions from the sidebar.
 ### Backend: Next.js
 ### AI Tools:  Gemini (Google Gen. AI) , LangChain , Vercel AI SDK
 
+## Getting Started
+
+1.Clone the repository
+```bash git clone https://github.com/BharateshPoojary/llm-model.git
+ cd llm-model
 ### NOTE: Do not ask question apart from the content of PDF you uploaded as this llm is tuned only  to answer about the user uploaded pdf.
