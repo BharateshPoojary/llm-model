@@ -95,19 +95,16 @@ export async function callChain({
     }); //This method is preparing a context  to our question it will consider llm and prompt but the thing is the prompt will include the context
     //Its a chain where we are passing a list of documents (in type of context to llm ) so that it can use that to answer
 
-    const ragChain = await createRetrievalChain({
-      retriever: vectorStore.asRetriever({ filter: { pdfId } }),
-      combineDocsChain: QAChain,
+    const ragChain = await createRetrievalChain({//In this function we are just providing the relevant docs and context source 
+      retriever: vectorStore.asRetriever({ filter: { pdfId } }),//the vectorstore will retrieve docs based on the pdfId 
+      combineDocsChain: QAChain,//This is the Context which we are giving It includes our chat history and our actual input question 
     }); //this method will consider our input which will contain the context and our actual input ,also we will provide vector store so that it can find relevant document
     console.log("Rag chain", ragChain);
-    const result = await ragChain.invoke({
+    const result = await ragChain.invoke({//so this RAG will retrieve the relevant docs as  per the context , input  and our vactorstore  
       context: contextMessages,
       input: sanitizedQuestion,
     });
-    // the flow is as follow
-    // the ragchain will give context and input to createStuffDocumentChain() where it will use the llm model and will create a prompt which will include the context and the input  provided
-    //Next this QA chain will be sent to rag chain where it will consider the relevant docs from vector db and the combine docs chain will be acting as an input question to our llm so that based on context provided it can give the answer
-    //which we are returning as result
+
     return result;
     // return LangChainAdapter.toDataStreamResponse(result as ReadableStream);
   } catch (error) {
