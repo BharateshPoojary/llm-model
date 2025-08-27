@@ -45,7 +45,7 @@ const ChatInput = () => {
   let search: string | null = null;
   if (searchParams.get("chatNumber")) {
     search = searchParams.get("chatNumber");
-    console.info("I need", search);
+    // console.info("I need", search);
   }
   const {
     messages,
@@ -71,10 +71,11 @@ const ChatInput = () => {
       }
     },
   });
-  useEffect(() => {
-    console.log("File Id", fileId)
-  }, [fileId])
+  // useEffect(() => {
+  //   console.log("File Id", fileId)
+  // }, [fileId])
   //here using useUser directly get user email and get its chat only like this authentiaction flow will be there
+  
   useEffect(() => {
     console.log("I am inside useEffect");
     dispatch(setChatId(params.chatid));
