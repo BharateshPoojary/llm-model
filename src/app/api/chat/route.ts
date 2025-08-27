@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callChain } from "@/lib/langchain";
-import { Message } from "ai";
+import { Message } from "@/model/Chat";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,10 +17,11 @@ export async function POST(req: NextRequest) {
     try {
       const stream = await callChain({
         question,
-        pdfId: data.pdfId,
+        // pdfId: data.pdfId,
         chatHistory: formattedPreviousMessages.join("\n"), //joining the  array elements which contain previous messages with /n
       }); //sending the question and chathistory to call chain for processing
       //This will return the context and answer
+      console.log("Stream", stream.answer);
       return NextResponse.json(
         {
           success: true,

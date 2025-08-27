@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Loader, Loader2, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
-import { useChat } from "@ai-sdk/react";
+import { Message, useChat } from "@ai-sdk/react";
 import { ChatLine } from "@/components/chat-line";
-import { Message } from "ai";
+
 import { scrollToBottom } from "@/lib/utils";
 import { useParams, useSearchParams } from "next/navigation";
 import {
@@ -22,6 +22,7 @@ import { Chat, setHistory } from "@/lib/features/Chat";
 import { SignedIn, useClerk, useUser } from "@clerk/nextjs";
 import { RootState } from "@/lib/store";
 import { ApiResponse } from "@/types/ApiResponse";
+
 const ChatInput = () => {
   const { isSignedIn, user } = useUser();
   let userEmail: string = "";
@@ -70,7 +71,9 @@ const ChatInput = () => {
       }
     },
   });
-
+  useEffect(() => {
+    console.log("File Id", fileId)
+  }, [fileId])
   //here using useUser directly get user email and get its chat only like this authentiaction flow will be there
   useEffect(() => {
     console.log("I am inside useEffect");
