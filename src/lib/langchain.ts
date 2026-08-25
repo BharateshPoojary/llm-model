@@ -116,23 +116,23 @@ export async function callChain({
     });
     console.log("History Aware Retriever", historyAwareRetriever);
     console.log("Retrieving documents...");
-    const retrievedDocuments = await historyAwareRetriever.invoke({
+    const retrievedChunks = await historyAwareRetriever.invoke({
       input: sanitizedQuestion,
       chat_history: formattedChatHistory,
     });
 
-    console.log("Retrieved documents count:", retrievedDocuments.length);
+    console.log("Retrieved documents count:", retrievedChunks.length);
 
     // The retriever is filtered by userId + chatId, so an empty result means
     // this chat has no PDF vectors at all — i.e. the user hasn't uploaded one.
-    if (!retrievedDocuments || retrievedDocuments.length === 0) {
+    if (!retrievedChunks || retrievedChunks.length === 0) {
       console.warn("No PDF vectors found for this chat:", chatId);
       return stringToStream(
         "You haven't uploaded a PDF in this chat yet. Please upload a PDF using the + button, then ask your question about it."
       );
     }
 
-    // const contextMessages = retrievedDocuments.map(
+    // const contextMessages = retrievedChunks.map(
     //   (doc: { pageContent: string }) => new HumanMessage(doc.pageContent)
     // );
 
@@ -142,19 +142,19 @@ export async function callChain({
       new MessagesPlaceholder("context"),
       ["human", "{input}"],
     ]);
-
+//createStuffDocumentsChain which retrieves text from chunks econstructs LangChain Document objects whose pageContent is that text. The retrieved vectors themselves are discarded at this point. and them LLM actually receives is the single assembled text
     const QAChain = await createStuffDocumentsChain({
       llm: getStreamingModel(),
       prompt: qaPrompt,
     });
-    console.log("Retrieved Docs", retrievedDocuments);
+    console.log("Retrieved Docs", retrievedChunks);
     console.log("Streaming QA chain...");
 
     // Stream the answer token-by-token. Retrieval above already finished, so
     // only the LLM generation streams — which is what the user sees appear
     // progressively in the UI.
     const stream = await QAChain.stream({
-      context: retrievedDocuments,
+      context: retrievedChunks,
       input: sanitizedQuestion,
     });
 
