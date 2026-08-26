@@ -5,7 +5,7 @@ export async function getChunkedDocsFromPDF(
   file: File,
   pdfId: string,
   userId: string,
-  chatId: string
+  chatId: string,
 ) {
   try {
     const loader = new PDFLoader(file); //creating a new instance of pdf loader class which inherits some other parent classes and this class includes a method named load() using which we will extract text from document
@@ -16,7 +16,7 @@ export async function getChunkedDocsFromPDF(
       chunkOverlap: 200,
     }); //creating a new instance of textSplitter with argument chunksize it represent how many charcter need to be stored in a single document object
     //chunkOverlap is used to maintain the context It will consider 200 character from previous document and will add to the new doucment so that each chunk we can maintain the context between each chunked document
-    // console.log("Document before chunking", docs);
+    // //console.log("Document before chunking", docs);
     const chunkedDocs = await textSplitter.splitDocuments(docs); //textSplitter is having  splitDocuments method which will split the documents in chunks as per we specified in argument and once splitted it will return an array of Document which contain chunk objects
     const docswithPdfId = chunkedDocs.map((doc) => ({
       ...doc,
@@ -27,7 +27,7 @@ export async function getChunkedDocsFromPDF(
         chatId,
       },
     }));
-    console.log("Document after docs with pdf Id", docswithPdfId);
+    //console.log("Document after docs with pdf Id", docswithPdfId);
     return docswithPdfId; //returning it so we can embed and store in our pinceconedb so that our llm can use that
   } catch (error) {
     if (error) {

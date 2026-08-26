@@ -35,7 +35,7 @@ const ChatInput = () => {
   const isGuest = isLoaded && !isSignedIn;
   let userEmail: string = "";
   if (isSignedIn) {
-    console.log("User", user.emailAddresses[0].emailAddress);
+    //console.log("User", user.emailAddresses[0].emailAddress);
     userEmail = user.emailAddresses[0].emailAddress;
   } else {
     userEmail = guestId;
@@ -74,10 +74,10 @@ const ChatInput = () => {
   //reply into `messages` token-by-token (the server returns the AI SDK data
   //stream protocol), so the UI updates live as the answer is generated.
   // useEffect(() => {
-  //   console.log("File Id", fileId)
+  //   //console.log("File Id", fileId)
   // }, [fileId])
   //here using useUser directly get user email and get its chat only like this authentiaction flow will be there
-  
+
   // Refresh the sidebar's conversation list from the DB. Shared by the mount
   // effect and the auto-persist effect (so a newly saved exchange appears in the
   // sidebar immediately).
@@ -95,9 +95,9 @@ const ChatInput = () => {
   }, [userEmail, dispatch]);
 
   useEffect(() => {
-    console.log("I am inside useEffect");
+    //console.log("I am inside useEffect");
     dispatch(setChatId(params.chatid));
-    console.log("params.chatId", params.chatid);
+    //console.log("params.chatId", params.chatid);
     // Wait until we have an identity (a real email, or a minted guest id).
     // A returning guest gets a fresh id, so history queries come back empty and
     // they never see a previous visit's conversations.

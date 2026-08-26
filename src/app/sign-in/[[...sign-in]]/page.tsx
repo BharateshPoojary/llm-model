@@ -27,7 +27,7 @@ export default function SignInForm() {
     // Start the sign-in process using the email and password provided
     try {
       setIsLoading(true);
-      console.log("Email", email, "Password", password);
+      //console.log("Email", email, "Password", password);
       const signInAttempt = await signIn.create({
         identifier: email,
         password,
@@ -36,7 +36,7 @@ export default function SignInForm() {
       // If sign-in process is complete, set the created session as active
       // and redirect the user
       if (signInAttempt.status === "complete") {
-        // console.log("I am In");
+        // //console.log("I am In");
         //if signin success then push to dashboard no need to verify form your db as clerk will do for you
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/");

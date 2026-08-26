@@ -19,22 +19,22 @@ export async function POST(req: NextRequest) {
     if (!effectiveUserId) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
     if (uploadedFile) {
-      console.log("Uploaded File", uploadedFile);
+      //console.log("Uploaded File", uploadedFile);
       const pdfFile = uploadedFile as File;
 
       const chunkedDocs = await getChunkedDocsFromPDF(
         pdfFile,
         pdfId as string,
         effectiveUserId,
-        chatId as string
+        chatId as string,
       );
 
       if (chunkedDocs) {
-        console.log("Chunked Docs", chunkedDocs);
+        //console.log("Chunked Docs", chunkedDocs);
         await embedAndStoreDocs(chunkedDocs);
       }
       return NextResponse.json(
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
         },
         {
           status: 200,
-        }
+        },
       );
     }
   } catch (error) {
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
         { success: false, message: error.message },
         {
           status: 500,
-        }
+        },
       );
     }
     return NextResponse.json(
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }

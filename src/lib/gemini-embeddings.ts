@@ -18,7 +18,7 @@ function getPineconeClient() {
   return pc;
 }
 export async function embedAndStoreDocs( // @ts-expect-error docs type error
-  chunkedDocs: Document<Record<string, string>>[] //this function will accept array of Documents i.e array of chunked docs which  we made using text splitter
+  chunkedDocs: Document<Record<string, string>>[], //this function will accept array of Documents i.e array of chunked docs which  we made using text splitter
 ) {
   try {
     const index = getPineconeClient().index("bharat-llm"); // Accesses a Pinecone index named "bharat-llm" An index in Pinecone is similar to a collection or table where vector embeddings are stored and searched.
@@ -39,7 +39,7 @@ export async function embedAndStoreDocs( // @ts-expect-error docs type error
       textKey: "text", //The key in the document object that holds the text content.
     });
     //This above method will return a vector store which as .asRetriever method Its return value can be used as value for retriever option in chain os that to query relevant document
-    console.log("Embed stored successfully");
+    //console.log("Embed stored successfully");
   } catch (error) {
     if (error) {
       throw new Error("Error while generating embeds");
@@ -66,7 +66,7 @@ export async function getVectorStore() {
 
     return vectorStore; //returning the vector store so that we can use in our chain
   } catch (error) {
-    console.log("error ", error);
+    //console.log("error ", error);
     throw new Error("Something went wrong while getting vector store !");
   }
 }

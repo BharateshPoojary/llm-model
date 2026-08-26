@@ -24,7 +24,7 @@ function formatChatHistory(chatHistory: string) {
     .map((msg) => msg.trim())
     .filter((msg) => msg !== "");
   return messages.map((msg, index) =>
-    index % 2 === 0 ? new HumanMessage(msg) : new AIMessage(msg)
+    index % 2 === 0 ? new HumanMessage(msg) : new AIMessage(msg),
   );
 }
 
@@ -46,12 +46,12 @@ export async function callChain({
   chatHistory,
 }: CallChainArgs) {
   try {
-    console.log("Question:", question);
-    console.log("User ID:", userId);
-    console.log("Chat ID:", chatId);
+    //console.log("Question:", question);
+    //console.log("User ID:", userId);
+    //console.log("Chat ID:", chatId);
 
     const sanitizedQuestion = question.trim().replace(/\n/g, " ");
-    console.log("Sanitized question:", sanitizedQuestion);
+    //console.log("Sanitized question:", sanitizedQuestion);
 
     const GREETING_REGEX =
       /^(hi|hello|hey|good (morning|afternoon|evening))[\s!.,]*$/i;
@@ -59,7 +59,7 @@ export async function callChain({
 
     if (GREETING_REGEX.test(sanitizedQuestion)) {
       return stringToStream(
-        "Hello! How can I assist you with your PDF document?"
+        "Hello! How can I assist you with your PDF document?",
       );
     }
 
@@ -80,18 +80,18 @@ export async function callChain({
     //   }
     // }
 
-    console.log("Getting vector store...");
+    //console.log("Getting vector store...");
     const vectorStore = await getVectorStore();
 
     if (!vectorStore) {
       console.error("Vector store not available");
       return stringToStream(
-        "Sorry, there was an issue accessing the document database. Please try again."
+        "Sorry, there was an issue accessing the document database. Please try again.",
       );
     }
 
     const formattedChatHistory = formatChatHistory(chatHistory);
-    console.log("Formatted chat history:", formattedChatHistory);
+    //console.log("Formatted chat history:", formattedChatHistory);
 
     const contextualizeQPrompt = ChatPromptTemplate.fromMessages([
       ["system", STANDALONE_QUESTION_TEMPLATE],
@@ -106,29 +106,29 @@ export async function callChain({
       userId: { $eq: userId },
       chatId: { $eq: chatId },
     };
-    console.log("Retrieval filter:", retrievalFilter);
+    //console.log("Retrieval filter:", retrievalFilter);
 
-    console.log("Creating history-aware retriever...");
+    //console.log("Creating history-aware retriever...");
     const historyAwareRetriever = await createHistoryAwareRetriever({
       llm: getNonStreamingModel(),
       retriever: vectorStore.asRetriever(10, retrievalFilter),
       rephrasePrompt: contextualizeQPrompt,
     });
-    console.log("History Aware Retriever", historyAwareRetriever);
-    console.log("Retrieving documents...");
+    //console.log("History Aware Retriever", historyAwareRetriever);
+    //console.log("Retrieving documents...");
     const retrievedChunks = await historyAwareRetriever.invoke({
       input: sanitizedQuestion,
       chat_history: formattedChatHistory,
     });
 
-    console.log("Retrieved documents count:", retrievedChunks.length);
+    //console.log("Retrieved documents count:", retrievedChunks.length);
 
     // The retriever is filtered by userId + chatId, so an empty result means
     // this chat has no PDF vectors at all — i.e. the user hasn't uploaded one.
     if (!retrievedChunks || retrievedChunks.length === 0) {
       console.warn("No PDF vectors found for this chat:", chatId);
       return stringToStream(
-        "You haven't uploaded a PDF in this chat yet. Please upload a PDF using the + button, then ask your question about it."
+        "You haven't uploaded a PDF in this chat yet. Please upload a PDF using the + button, then ask your question about it.",
       );
     }
 
@@ -136,19 +136,19 @@ export async function callChain({
     //   (doc: { pageContent: string }) => new HumanMessage(doc.pageContent)
     // );
 
-    console.log("Creating QA chain...");
+    //console.log("Creating QA chain...");
     const qaPrompt = ChatPromptTemplate.fromMessages([
       ["system", QA_TEMPLATE],
       new MessagesPlaceholder("context"),
       ["human", "{input}"],
     ]);
-//createStuffDocumentsChain which retrieves text from chunks econstructs LangChain Document objects whose pageContent is that text. The retrieved vectors themselves are discarded at this point. and them LLM actually receives is the single assembled text
+    //createStuffDocumentsChain which retrieves text from chunks econstructs LangChain Document objects whose pageContent is that text. The retrieved vectors themselves are discarded at this point. and them LLM actually receives is the single assembled text
     const QAChain = await createStuffDocumentsChain({
       llm: getStreamingModel(),
       prompt: qaPrompt,
     });
-    console.log("Retrieved Docs", retrievedChunks);
-    console.log("Streaming QA chain...");
+    //console.log("Retrieved Docs", retrievedChunks);
+    //console.log("Streaming QA chain...");
 
     // Stream the answer token-by-token. Retrieval above already finished, so
     // only the LLM generation streams — which is what the user sees appear
@@ -165,18 +165,18 @@ export async function callChain({
     if (error instanceof Error) {
       if (error.message.includes("vector store")) {
         return stringToStream(
-          "There was an issue accessing the document database. Please ensure your PDF was uploaded successfully."
+          "There was an issue accessing the document database. Please ensure your PDF was uploaded successfully.",
         );
       }
       if (error.message.includes("retriever")) {
         return stringToStream(
-          "I couldn't retrieve relevant information from your PDF. Please try a different question."
+          "I couldn't retrieve relevant information from your PDF. Please try a different question.",
         );
       }
     }
 
     return stringToStream(
-      "I encountered an unexpected error. Please try again or rephrase your question."
+      "I encountered an unexpected error. Please try again or rephrase your question.",
     );
   }
 }

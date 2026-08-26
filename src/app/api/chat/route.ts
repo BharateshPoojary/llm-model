@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const { userId } = await auth();
 
     const { messages, data } = await req.json();
-    console.log("Data", data);
+    //console.log("Data", data);
     const chatId = data?.chatId as string;
 
     // Auth is optional. A signed-in user is scoped by their trusted Clerk
@@ -20,13 +20,13 @@ export async function POST(req: NextRequest) {
     if (!effectiveUserId) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
     if (!chatId) {
       return NextResponse.json(
         { success: false, message: "Missing chat id" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const formattedPreviousMessages = messages
@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
       .filter((content: Message) => content); //It will only consider true value removing falsy value
     const question =
       messages.length > 0 ? messages[messages.length - 1].content?.trim() : ""; //the question the user has asked now the last element from the messages array
-    console.log("Question", question);
-    console.log("Formatted Previous Message", formattedPreviousMessages);
+    //console.log("Question", question);
+    //console.log("Formatted Previous Message", formattedPreviousMessages);
     try {
       const stream = await callChain({
         question,

@@ -8,7 +8,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   // A signed-in user landing on a public page is dropped into a fresh chat.
   if (userId && isPublicRoute(req)) {
     const chatId = Date.now();
-    console.log("chatId", chatId);
+    //console.log("chatId", chatId);
     const newUrl = new URL(`/c/${chatId}`, req.url);
     return NextResponse.redirect(newUrl);
   }

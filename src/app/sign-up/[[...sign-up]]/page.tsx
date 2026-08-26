@@ -85,7 +85,7 @@ export default function Page() {
         });
         if (response.data.success) {
           toast.success(response.data.message);
-          console.log("Response", response.data);
+          //console.log("Response", response.data);
           await setActive({ session: signUpAttempt.createdSessionId });
           router.replace(`/c/${chatId}`);
         }

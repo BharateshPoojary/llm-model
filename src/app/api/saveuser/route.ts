@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const { chatId, useremail, ArrayOfChats } = await request.json();
-    console.log(chatId, useremail, ArrayOfChats);
+    //console.log(chatId, useremail, ArrayOfChats);
 
     await dbConnection();
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
           success: true,
           message: "User with this email already exists",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -25,14 +25,14 @@ export async function POST(request: NextRequest) {
       useremail,
       ArrayOfChats,
     }).save();
-    console.log(saveUser);
+    //console.log(saveUser);
     if (saveUser) {
       return NextResponse.json(
         {
           success: true,
           message: "Account verified successfully",
         },
-        { status: 201 }
+        { status: 201 },
       );
     }
   } catch (error) {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         success: false,
         message: `Internal Server Error`,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
