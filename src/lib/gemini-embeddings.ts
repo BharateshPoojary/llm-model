@@ -2,6 +2,7 @@ import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { TaskType } from "@google/generative-ai";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { PineconeStore } from "@langchain/pinecone";
+import { Document } from "@langchain/core/documents";
 
 // Lazily create the Pinecone client on first use rather than at module load.
 // The Pinecone constructor validates PINECONE_API_KEY immediately, but that env
@@ -17,8 +18,8 @@ function getPineconeClient() {
   }
   return pc;
 }
-export async function embedAndStoreDocs( // @ts-expect-error docs type error
-  chunkedDocs: Document<Record<string, string>>[], //this function will accept array of Documents i.e array of chunked docs which  we made using text splitter
+export async function embedAndStoreDocs(
+  chunkedDocs: Document[], //this function will accept array of Documents i.e array of chunked docs which  we made using text splitter
 ) {
   try {
     const index = getPineconeClient().index("bharat-llm"); // Accesses a Pinecone index named "bharat-llm" An index in Pinecone is similar to a collection or table where vector embeddings are stored and searched.
@@ -65,8 +66,7 @@ export async function getVectorStore() {
     });
 
     return vectorStore; //returning the vector store so that we can use in our chain
-  } catch (error) {
-    //console.log("error ", error);
+  } catch {
     throw new Error("Something went wrong while getting vector store !");
   }
 }
